@@ -38,62 +38,6 @@ const PartyPage: React.FC<any> = ({ match }) => {
   const [pending, setPending] = useState(true)
   const [partyExists, setPartyExists] = useState(false)
 
-  function fetchPartyData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('parties/' + partyId)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        setAgeInterval(data['ageInterval'])
-        setAuthorId(data['author'])
-        setDescription(data['description'])
-        setGuestsNumberInterval(data['guestsNumberInterval'])
-        setImageName(data['imageName'])
-        setMeetPoint(data['meetingPoint'])
-        setMeetingTime(data['meetingTime'])
-        setName(data['name'])
-        const guestsIdsArray = data.guests
-        if (guestsIdsArray) {
-          setGuestsIds(guestsIdsArray)
-        }
-        const waitRequestsArray = data.waitingRequests
-        if (waitRequestsArray) {
-          setWaitingRequests(waitRequestsArray)
-        }
-        const rejectedRequestsArray = data.rejectedRequests
-        if (rejectedRequestsArray) {
-          setRejectedRequests(rejectedRequestsArray)
-        }
-        setPartyExists(true)
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => setPending(false))
-  }
-
-  function fetchCurrentUserData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('users/' + currentUserId)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        setUserAge(data['age'])
-        const waitingRequestsArray = data['waitingRequests']
-        if (waitingRequestsArray) {
-          setUserWaitingRequests(waitingRequestsArray)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => setPending(false))
-  }
-
   function participateBtnHandler() {
     setPending(true)
     try {
@@ -270,9 +214,64 @@ const PartyPage: React.FC<any> = ({ match }) => {
   }
 
   useEffect(() => {
+    function fetchPartyData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('parties/' + partyId)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          setAgeInterval(data['ageInterval'])
+          setAuthorId(data['author'])
+          setDescription(data['description'])
+          setGuestsNumberInterval(data['guestsNumberInterval'])
+          setImageName(data['imageName'])
+          setMeetPoint(data['meetingPoint'])
+          setMeetingTime(data['meetingTime'])
+          setName(data['name'])
+          const guestsIdsArray = data.guests
+          if (guestsIdsArray) {
+            setGuestsIds(guestsIdsArray)
+          }
+          const waitRequestsArray = data.waitingRequests
+          if (waitRequestsArray) {
+            setWaitingRequests(waitRequestsArray)
+          }
+          const rejectedRequestsArray = data.rejectedRequests
+          if (rejectedRequestsArray) {
+            setRejectedRequests(rejectedRequestsArray)
+          }
+          setPartyExists(true)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => setPending(false))
+    }
+
+    function fetchCurrentUserData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('users/' + currentUserId)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          setUserAge(data['age'])
+          const waitingRequestsArray = data['waitingRequests']
+          if (waitingRequestsArray) {
+            setUserWaitingRequests(waitingRequestsArray)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => setPending(false))
+    }
     fetchPartyData()
     fetchCurrentUserData()
-  }, [])
+  }, [currentUserId, partyId])
 
   if (pending) {
     return <Preloader />

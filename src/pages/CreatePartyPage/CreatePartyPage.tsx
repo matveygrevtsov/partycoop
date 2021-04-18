@@ -117,28 +117,27 @@ const CreatePartyPage: React.FC<any> = () => {
     }
   }
 
-  function fetchUserData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('users/' + currentUserUid)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        const organizedPartiesArray = data['organizedParties']
-        if (organizedPartiesArray) {
-          setOrganizedParties(organizedPartiesArray)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => setPending(false))
-  }
-
   useEffect(() => {
+    function fetchUserData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('users/' + currentUserUid)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          const organizedPartiesArray = data['organizedParties']
+          if (organizedPartiesArray) {
+            setOrganizedParties(organizedPartiesArray)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => setPending(false))
+    }
     fetchUserData()
-  }, [])
+  }, [currentUserUid])
 
   const onFileChange = (event: any) => {
     setImg(event.target.files[0])

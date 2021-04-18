@@ -12,33 +12,33 @@ const Requests: React.FC<any> = () => {
   const [waitingRequests, setWaitingRequests] = useState([])
   const [rejectedRequests, setRejectedRequests] = useState([])
   const [pending, setPending] = useState(true)
-
-  function fetchUserData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('users/' + currentUser.uid)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        const userWaitingRequests = data['waitingRequests']
-        const userRejectedRequests = data['rejectedRequests']
-        if (userWaitingRequests) {
-          setWaitingRequests(userWaitingRequests)
-        }
-        if (userRejectedRequests) {
-          setRejectedRequests(userRejectedRequests)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => setPending(false))
-  }
+  const currentUserUid = currentUser.uid
 
   useEffect(() => {
+    function fetchUserData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('users/' + currentUserUid)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          const userWaitingRequests = data['waitingRequests']
+          const userRejectedRequests = data['rejectedRequests']
+          if (userWaitingRequests) {
+            setWaitingRequests(userWaitingRequests)
+          }
+          if (userRejectedRequests) {
+            setRejectedRequests(userRejectedRequests)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => setPending(false))
+    }
     fetchUserData()
-  }, [])
+  }, [currentUserUid])
 
   if (pending) {
     return <Preloader />

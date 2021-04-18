@@ -15,31 +15,30 @@ const PartyCard: React.FC<any> = ({ partyId }) => {
   const [authorId, setAuthorId] = useState('')
   const [guestsIds, setGuestsIds] = useState([])
 
-  function fetchPartyData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('parties/' + partyId)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        setImageName(data['imageName'])
-        setName(data['name'])
-        setAuthorId(data['author'])
-        const guestsIdsArray = data.guests
-        if (guestsIdsArray) {
-          setGuestsIds(guestsIdsArray)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-      .finally(() => setPending(false))
-  }
-
   useEffect(() => {
+    function fetchPartyData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('parties/' + partyId)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          setImageName(data['imageName'])
+          setName(data['name'])
+          setAuthorId(data['author'])
+          const guestsIdsArray = data.guests
+          if (guestsIdsArray) {
+            setGuestsIds(guestsIdsArray)
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        .finally(() => setPending(false))
+    }
     fetchPartyData()
-  }, [])
+  }, [partyId])
 
   return pending ? (
     <Preloader />

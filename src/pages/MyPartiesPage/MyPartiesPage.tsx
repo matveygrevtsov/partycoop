@@ -12,29 +12,29 @@ const MyPartiesPage: React.FC<any> = () => {
   const { currentUser } = useContext(AuthContext)
   const [organizedParties, setOrganizedParties] = useState([])
   const [pending, setPending] = useState(true)
-
-  function fetchUserData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('users/' + currentUser.uid)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        const organizedPartiesArray = data['organizedParties']
-        if (organizedPartiesArray) {
-          setOrganizedParties(organizedPartiesArray)
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-      .finally(() => setPending(false))
-  }
+  const currentUserUid = currentUser.uid
 
   useEffect(() => {
+    function fetchUserData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('users/' + currentUserUid)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          const organizedPartiesArray = data['organizedParties']
+          if (organizedPartiesArray) {
+            setOrganizedParties(organizedPartiesArray)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => setPending(false))
+    }
     fetchUserData()
-  }, [])
+  }, [currentUserUid])
 
   if (pending) {
     return <Preloader />

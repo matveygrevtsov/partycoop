@@ -11,23 +11,22 @@ const UserIcon: React.FC<Props> = ({ userId, ...rest }) => {
   const [imageName, setImageName] = useState('')
   const [pending, setPending] = useState(true)
 
-  function fetchUserData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('users/' + userId)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        setImageName(data['imageName'])
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setPending(false))
-  }
-
   useEffect(() => {
+    function fetchUserData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('users/' + userId)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          setImageName(data['imageName'])
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setPending(false))
+    }
     fetchUserData()
-  }, [])
+  }, [userId])
 
   return pending ? null : (
     <ImgLink to={'/user/' + userId} {...rest} imgName={imageName} />

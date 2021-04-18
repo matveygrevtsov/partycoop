@@ -12,6 +12,7 @@ const storage = firebaseApp.storage()
 
 const EditMyInfoForm: React.FC<any> = () => {
   const { currentUser } = useContext(AuthContext)
+  const currentUserUid = currentUser.uid
 
   const [pending, setPending] = useState(true)
   const [fullName, setFullName] = useState('')
@@ -70,33 +71,34 @@ const EditMyInfoForm: React.FC<any> = () => {
   }
 
   useEffect(() => {
+    function fetchUserData() {
+      firebaseApp
+        .database()
+        .ref('users/' + currentUserUid)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          setFullName(data['fullname'])
+          setAge(data['age'])
+          setAboutMe(data['aboutMe'])
+  
+          const ref = firebaseApp.storage().ref('images').child(data['imageName'])
+          ref
+            .getDownloadURL()
+            .then((url) => {
+              setImgUrl(url)
+            })
+            .catch(() => {
+              setImgUrl(imageNotFound)
+            })
+        })
+        .catch((err) => {})
+        .finally(() => setPending(false))
+    }
     fetchUserData()
-  }, [])
+  }, [currentUserUid])
 
-  function fetchUserData() {
-    firebaseApp
-      .database()
-      .ref('users/' + currentUser.uid)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        setFullName(data['fullname'])
-        setAge(data['age'])
-        setAboutMe(data['aboutMe'])
-
-        const ref = firebaseApp.storage().ref('images').child(data['imageName'])
-        ref
-          .getDownloadURL()
-          .then((url) => {
-            setImgUrl(url)
-          })
-          .catch(() => {
-            setImgUrl(imageNotFound)
-          })
-      })
-      .catch((err) => {})
-      .finally(() => setPending(false))
-  }
+  
 
   return pending ? (
     <Preloader />
@@ -143,7 +145,7 @@ const EditMyInfoForm: React.FC<any> = () => {
         </div>
       </div>
       <div className={styles.formCol}>
-        <img className={styles.imgPreview} src={imgUrl} />
+        <img className={styles.imgPreview} src={imgUrl} alt="Preview" />
         <input
           className={styles.uploadImgBtn}
           type="file"

@@ -27,7 +27,7 @@ const ImgLink: React.FC<Props> = ({ to, imgName, ...rest }) => {
     } catch (error) {
       setUrl(`url(${imageNotFound})`)
     }
-  }, [])
+  }, [imgName])
 
   return <Link to={to} {...rest} style={{ backgroundImage: url }} />
 }

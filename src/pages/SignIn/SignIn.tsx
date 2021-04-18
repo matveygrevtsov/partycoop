@@ -63,7 +63,7 @@ const SignIn: React.FC<any> = ({ history }) => {
         <br />
         <br />
         <div className={styles.otherActions}>
-          <Link to="./signup" className={styles.signUp} href="#">
+          <Link to="./signup" className={styles.signUp}>
             Sign Up
           </Link>
         </div>

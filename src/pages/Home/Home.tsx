@@ -13,12 +13,12 @@ const Home: React.FC<any> = () => {
       <section className={styles.myAccountSettings}>
         <div className={styles.sectionHead}>
           <h2>My account</h2>
-          <a
+          <button
             className={styles.signOutLink}
             onClick={() => firebase.auth().signOut()}
           >
             <FontAwesomeIcon icon={faSignOutAlt} size="2x" />
-          </a>
+          </button>
         </div>
         <EditMyInfoForm />
       </section>

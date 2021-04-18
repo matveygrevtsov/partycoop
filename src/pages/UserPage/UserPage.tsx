@@ -17,34 +17,33 @@ const UserPage: React.FC<any> = ({ match }) => {
   const [organizedPartiesNumber, setOrganizedPartiesNumber] = useState(0)
   const [participationNumber, setParticipationNumber] = useState(0)
 
-  function fetchUserData() {
-    setPending(true)
-    firebaseApp
-      .database()
-      .ref('users/' + userId)
-      .once('value')
-      .then((snapshot) => {
-        const data = snapshot.val()
-        setFullname(data['fullname'])
-        setAge(data['age'])
-        setAboutMe(data['aboutMe'])
-        const organizedPartiesArray = data['organizedParties']
-        const participationArray = data['participation']
-        if (organizedPartiesArray) {
-          setOrganizedPartiesNumber(data['organizedParties'].length)
-        }
-        if (participationArray) {
-          setParticipationNumber(data['participation'].length)
-        }
-        setUserExists(true)
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setPending(false))
-  }
-
   useEffect(() => {
+    function fetchUserData() {
+      setPending(true)
+      firebaseApp
+        .database()
+        .ref('users/' + userId)
+        .once('value')
+        .then((snapshot) => {
+          const data = snapshot.val()
+          setFullname(data['fullname'])
+          setAge(data['age'])
+          setAboutMe(data['aboutMe'])
+          const organizedPartiesArray = data['organizedParties']
+          const participationArray = data['participation']
+          if (organizedPartiesArray) {
+            setOrganizedPartiesNumber(data['organizedParties'].length)
+          }
+          if (participationArray) {
+            setParticipationNumber(data['participation'].length)
+          }
+          setUserExists(true)
+        })
+        .catch((err) => console.log(err))
+        .finally(() => setPending(false))
+    }
     fetchUserData()
-  }, [])
+  }, [userId])
 
   if (pending) {
     return <Preloader />

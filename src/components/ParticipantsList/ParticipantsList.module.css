@@ -1,0 +1,54 @@
+.partyParticipants {
+  display: inline-block;
+  list-style: none;
+  float: right;
+  margin: 0;
+  padding: 0;
+}
+
+.partyParticipant {
+  border-radius: 50%;
+  background-color: #808080;
+  float: left;
+  background-size: cover;
+  background-position: center center;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+}
+
+.partyParticipants li,
+.partyParticipant {
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  line-height: 50px;
+  position: relative;
+}
+
+@media (max-width: 500px) {
+  .partyParticipants li,
+  .partyParticipant {
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+  }
+
+  .partyParticipants {
+    display: block;
+    margin: auto;
+    float: none;
+    margin-top: 16px;
+  }
+}
+
+.partyParticipants .crown {
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  z-index: 9;
+  display: block;
+}

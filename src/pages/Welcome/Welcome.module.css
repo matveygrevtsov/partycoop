@@ -1,0 +1,16 @@
+.welcomeSection {
+  padding: 15px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.centerLogo {
+  width: 200px;
+  max-width: 100%;
+  display: block;
+  margin: auto;
+}
+
+.welcomeSection a {
+    margin: 15px;
+}

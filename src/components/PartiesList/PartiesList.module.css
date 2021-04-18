@@ -1,0 +1,18 @@
+.resultsGrid {
+  position: relative;
+  margin: auto;
+  width: 100%;
+  max-width: 900px;
+  display: grid;
+  grid-gap: 24px;
+  grid-template-columns: repeat(2, 1fr);
+  margin-top: 36px;
+  align-items: end;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 500px) {
+  .resultsGrid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

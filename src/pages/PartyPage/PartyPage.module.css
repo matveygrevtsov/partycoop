@@ -1,0 +1,133 @@
+.partyCard {
+  max-width: 900px;
+  width: 100%;
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  margin: auto;
+  margin-top: 15px;
+  background-color: white;
+  height: calc(100% - 30px);
+  overflow-y: auto;
+}
+
+.partyHeader {
+  display: block;
+  background-position: center center;
+  background-size: cover;
+  height: 100px;
+  padding: 48px;
+  color: white;
+  text-align: center;
+}
+
+.partyBody {
+  padding: 15px;
+}
+
+.partyName {
+  margin: 0;
+}
+
+.partyActions {
+  margin: 16px 0 16px 0;
+  height: 50px;
+}
+
+.partyDescription {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.partyDescriptionDetails {
+  list-style: none;
+  margin: 0;
+}
+
+.partyDescriptionDetails .iconFontAwesome {
+  margin-right: 10px;
+  width: 60px;
+  display: inline-block;
+}
+
+.partyDescriptionDetails span {
+  display: inline-block;
+}
+
+.partyDescriptionDetails li {
+  margin-bottom: 15px;
+}
+
+@media (max-width: 900px) {
+  .party {
+    width: calc(100% - 30px);
+    left: 15px;
+  }
+  .partyDescription {
+    display: block;
+  }
+  .partyDescriptionDetails {
+    margin-top: 30px;
+    padding: 0;
+  }
+  .partyActions {
+    height: auto;
+  }
+}
+
+.redText {
+  color: #dc3545;
+  line-height: 50px;
+}
+
+.greenText {
+  color: #198754;
+  line-height: 50px;
+}
+
+.userIcon {
+  border-radius: 50%;
+  background-color: #808080;
+  float: left;
+  background-size: cover;
+  background-position: center center;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+  height: 50px;
+  width: 50px;
+}
+
+.requestsList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.requestsList > li {
+  height: 50px;
+  width: 100%;
+}
+
+.acceptRequestsBtn,
+.rejectedRequestsBtn {
+  border: none;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  margin-left: 7px;
+  cursor: pointer;
+  height: 40px;
+  padding: 10px;
+  margin-top: 5px;
+}
+
+.acceptRequestsBtn {
+  color: #198754;
+}
+
+.rejectedRequestsBtn {
+  color: #dc3545;
+}

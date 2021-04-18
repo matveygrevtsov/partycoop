@@ -1,0 +1,85 @@
+@font-face {
+  font-family: Pragmatica-ExtraLight;
+  src: url(../../fonts/Pragmatica-ExtraLight.ttf);
+}
+
+.signUpSection {
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.signUpForm {
+  position: relative;
+  margin: auto;
+  width: 100%;
+  max-width: 400px;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.inputText {
+  height: 50px;
+  box-shadow: inset 0 0 0 4px #e1e1e1, 0 0 1px rgb(0 0 0 / 0%);
+  border: none;
+  padding: 10px;
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.otherActions {
+  height: 21px;
+}
+
+.otherActions .forgotPass {
+  display: inline;
+  float: left;
+}
+
+.otherActions .signUp {
+  display: inline;
+  float: right;
+}
+
+.submitBtn {
+  font-size: 100%;
+  font-family: inherit;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}
+
+.submitBtn {
+  font-size: 100%;
+  font-family: inherit;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  margin-top: 15px;
+}
+
+.errorText {
+  color: #dc143c;
+}
+
+.aboutMeArea {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  min-height: 140px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  position: relative;
+  margin-top: 15px;
+  padding: 10px;
+  font-family: Pragmatica-ExtraLight;
+  font-size: 14px;
+}

@@ -1,0 +1,11 @@
+.preloader {
+    position: relative;
+    margin: auto;
+    width: 100%;
+    max-width: 250px;
+}
+
+.preloader > img {
+    width: 100%;
+}
+

@@ -1,0 +1,47 @@
+.userCard {
+  box-sizing: border-box;
+  padding: 15px;
+}
+
+.userPageContainer {
+  max-width: 100%;
+  width: 900px;
+  position: relative;
+  margin: auto;
+  background-color: white;
+  margin-top: 40px;
+  padding: 15px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.avatar {
+  display: block;
+  height: 180px;
+  width: 180px;
+  position: relative;
+  margin: auto;
+  border-radius: 50%;
+  background-position: center center;
+  background-size: cover;
+  top: -50px;
+}
+
+.statistics {
+  display: flex;
+  justify-content: center;
+}
+
+.statistics > div {
+  padding: 20px;
+  font-weight: 800;
+}
+
+.profileStrong {
+  font-weight: 800;
+  color: #c82067;
+}
+
+.userAboutMe {
+  margin-top: 15px;
+}

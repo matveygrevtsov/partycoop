@@ -1,0 +1,58 @@
+.createParty {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+  margin: auto;
+  background-color: white;
+  margin-top: 15px;
+}
+
+.redText {
+  color: red;
+}
+
+.inputText {
+  border: none;
+  border-bottom: 2px solid #e1e1e1;
+  border-radius: 2px;
+  outline: none;
+  height: 30px;
+  font-size: 20px;
+  margin-right: 7px;
+}
+
+.inputText[type='number'] {
+  width: 50px;
+  text-align: center;
+}
+
+.formGroup {
+  margin-top: 15px;
+}
+
+.descriptionArea {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  min-height: 140px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.chooseDate {
+  margin-left: 7px;
+}
+
+.submitBtn {
+  font-size: 100%;
+  font-family: inherit;
+  border: 0;
+  padding: 0;
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+}

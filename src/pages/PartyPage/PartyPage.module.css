@@ -9,6 +9,7 @@
   background-color: white;
   height: calc(100% - 30px);
   overflow-y: auto;
+  overflow-x: visible;
 }
 
 .partyHeader {
@@ -23,6 +24,7 @@
 
 .partyBody {
   padding: 15px;
+  overflow-x: visible;
 }
 
 .partyName {
@@ -85,7 +87,7 @@
   line-height: 50px;
 }
 
-.userIcon {
+.UserLabel {
   border-radius: 50%;
   background-color: #808080;
   float: left;

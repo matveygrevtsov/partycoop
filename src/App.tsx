@@ -35,7 +35,7 @@ const App: React.FC<any> = () => {
               path="/createparty"
               component={CreatePartyPage}
             />
-            <PrivateRoute exact path="/" component={Home} />
+            <PrivateRoute exact path="/settings" component={Home} />
             <Route component={PageNotFound} />
           </Switch>
         </Router>

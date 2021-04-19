@@ -4,6 +4,7 @@
   float: right;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 
 .partyParticipant {
@@ -22,7 +23,6 @@
   display: inline-block;
   height: 50px;
   width: 50px;
-  line-height: 50px;
   position: relative;
 }
 
@@ -51,4 +51,58 @@
   right: -5px;
   z-index: 9;
   display: block;
+}
+
+.remainingGuestsBtn {
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  line-height: 20px;
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.remainingGuestsBtn:active {
+  outline: none;
+  border: none;
+}
+
+.remainingGuestsBtn:focus {
+  outline: 0;
+}
+
+.detailedListWindow {
+  display: none;
+  position: fixed;
+  height: 200px;
+  max-width: 400px;
+  width: 100%;
+  background-color: white;
+  box-sizing: border-box;
+  padding: 15px;
+  top: 75px;
+  left: calc(50% - 200px);
+  max-height: 600px;
+  height: calc(100% - 75px);
+  z-index: 999;
+  overflow-y: auto;
+  border: solid;
+  border-radius: 2%;
+}
+
+@media (max-width: 400px) {
+  .detailedListWindow {
+    left: 0;
+  }
+}
+
+.closeListBtn {
+  position: absolute;
+  top: 35px;
+  right: 15px;
+  height: 31px;
+  cursor: pointer
 }

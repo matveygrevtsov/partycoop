@@ -30,7 +30,7 @@ const SignIn: React.FC<any> = ({ history }) => {
   const { currentUser } = useContext(AuthContext)
 
   if (currentUser) {
-    return <Redirect to="/" />
+    return <Redirect to="/settings" />
   }
 
   return (

@@ -11,7 +11,7 @@ import Button from '../../components/Button/Button'
 import { AuthContext } from '../../Auth'
 import NavBar from '../../components/NavBar/NavBar'
 import Preloader from '../../components/Preloader/Preloader'
-import UserIcon from '../../components/UserIcon/UserIcon'
+import UserLabel from '../../components/UserLabel/UserLabel'
 import PageNotFound from '../PageNotFound/PageNotFound'
 
 const PartyPage: React.FC<any> = ({ match }) => {
@@ -344,7 +344,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
               <ul className={styles.requestsList}>
                 {waitingRequests.map((userId: string) => (
                   <li>
-                    <UserIcon className={styles.userIcon} userId={userId} />
+                    <UserLabel className={styles.UserLabel} userId={userId} />
                     <button
                       className={styles.acceptRequestsBtn}
                       value={userId}
@@ -367,7 +367,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
               <ul className={styles.requestsList}>
                 {rejectedRequests.map((userId: string) => (
                   <li>
-                    <UserIcon className={styles.userIcon} userId={userId} />
+                    <UserLabel className={styles.UserLabel} userId={userId} />
                   </li>
                 ))}
               </ul>

@@ -1,0 +1,38 @@
+.detailedParticipantsList {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.userLabelDetailed {
+  display: inline-block;
+  height: 50px;
+  width: 50px;
+  position: relative;
+  border-radius: 50%;
+  background-color: #808080;
+  float: left;
+  background-size: cover;
+  background-position: center center;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+}
+
+.detailedListItem {
+  height: 50px;
+  margin-top: 7px;
+  position: relative;
+}
+
+.detailedParticipantsList .crown {
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  top: -5px;
+  left: 35px;
+  z-index: 9;
+  display: block;
+}

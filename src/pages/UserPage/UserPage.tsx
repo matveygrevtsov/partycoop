@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from './UserPage.module.css'
 import firebaseApp from '../../firebaseApp'
-import UserIcon from '../../components/UserIcon/UserIcon'
+import UserLabel from '../../components/UserLabel/UserLabel'
 import NavBar from '../../components/NavBar/NavBar'
 import Preloader from '../../components/Preloader/Preloader'
 import PageNotFound from '../PageNotFound/PageNotFound'
@@ -58,7 +58,7 @@ const UserPage: React.FC<any> = ({ match }) => {
       <NavBar />
       <section className={styles.userCard}>
         <div className={styles.userPageContainer}>
-          <UserIcon className={styles.avatar} userId={userId} />
+          <UserLabel className={styles.avatar} userId={userId} />
           <div className={styles.statistics}>
             <div>
               <strong className={styles.profileStrong}>

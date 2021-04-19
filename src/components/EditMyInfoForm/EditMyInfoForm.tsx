@@ -52,7 +52,7 @@ const EditMyInfoForm: React.FC<any> = () => {
         .database()
         .ref('users/' + currentUser.uid)
         .update({
-          fullname: fullName.trim(),
+          fullName: fullName.trim(),
           age: age,
           aboutMe: aboutMe.trim(),
           imageName: imgLink,
@@ -78,7 +78,7 @@ const EditMyInfoForm: React.FC<any> = () => {
         .once('value')
         .then((snapshot) => {
           const data = snapshot.val()
-          setFullName(data['fullname'])
+          setFullName(data['fullName'])
           setAge(data['age'])
           setAboutMe(data['aboutMe'])
   

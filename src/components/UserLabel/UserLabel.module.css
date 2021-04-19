@@ -1,0 +1,28 @@
+.label {
+  display: none;
+  position: absolute;
+  background-color: #e5e9ec;
+  bottom: 55px;
+  color: black;
+  border-radius: 25%;
+  padding: 6px;
+  right: 0;
+}
+
+a:hover > .label {
+  display: block;
+}
+
+.partyParticipants .crown {
+  height: 20px;
+  width: 20px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  z-index: 9;
+  display: block;
+}
+
+.userDetailedDescription {
+
+}

@@ -22,7 +22,7 @@ const DetailedParticipantsList: React.FC<Props> = ({ authorId, guestsIDs }) => {
           ></UserLabel>
         </li>
         {guestsIDs.map((id) => (
-          <li className={styles.detailedListItem}>
+          <li key={id} className={styles.detailedListItem}>
             <UserLabel
               className={styles.userLabelDetailed}
               userId={id}

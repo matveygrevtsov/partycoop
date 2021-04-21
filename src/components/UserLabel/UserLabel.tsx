@@ -10,9 +10,8 @@ type Props = {
 }
 
 const UserLabel: React.FC<Props> = ({ userId, detailed, ...rest }) => {
-  const [imageName, setImageName] = useState('')
+  const [user, setUser]: any = useState({})
   const [pending, setPending] = useState(true)
-  const [fullName, setFullName] = useState('')
 
   useEffect(() => {
     function fetchUserData() {
@@ -23,8 +22,10 @@ const UserLabel: React.FC<Props> = ({ userId, detailed, ...rest }) => {
         .once('value')
         .then((snapshot) => {
           const data = snapshot.val()
-          setImageName(data['imageName'])
-          setFullName(data['fullName'])
+          setUser({
+            imageName: data.imageName,
+            fullName: data.fullName,
+          })
         })
         .catch((err) => console.log(err))
         .finally(() => setPending(false))
@@ -39,13 +40,13 @@ const UserLabel: React.FC<Props> = ({ userId, detailed, ...rest }) => {
   if (detailed) {
     return (
       <>
-        <ImgLink to={'/user/' + userId} imgName={imageName} {...rest} />
-        <span className={styles.userDetailedDescription}>{fullName}</span>
+        <ImgLink to={'/user/' + userId} imgName={user.imageName} {...rest} />
+        <span className={styles.userDetailedDescription}>{user.fullName}</span>
       </>
     )
   }
 
-  return <ImgLink to={'/user/' + userId} {...rest} imgName={imageName} />
+  return <ImgLink to={'/user/' + userId} {...rest} imgName={user.imageName} />
 }
 
 export default UserLabel

@@ -10,7 +10,7 @@ const UserPage: React.FC<any> = ({ match }) => {
   const userId = match.params.userId
 
   const [pending, setPending] = useState(true)
-  const [fullname, setFullname] = useState('')
+  const [fullName, setFullname] = useState('')
   const [age, setAge] = useState(0)
   const [aboutMe, setAboutMe] = useState('')
   const [userExists, setUserExists] = useState(false)
@@ -26,7 +26,7 @@ const UserPage: React.FC<any> = ({ match }) => {
         .once('value')
         .then((snapshot) => {
           const data = snapshot.val()
-          setFullname(data['fullname'])
+          setFullname(data['fullName'])
           setAge(data['age'])
           setAboutMe(data['aboutMe'])
           const organizedPartiesArray = data['organizedParties']
@@ -78,7 +78,7 @@ const UserPage: React.FC<any> = ({ match }) => {
 
           <div className={styles.userAboutMe}>
             <strong className={styles.profileStrong}>
-              {fullname}, {age}
+              {fullName}, {age}
             </strong>
             <p>{aboutMe}</p>
           </div>

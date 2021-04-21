@@ -5,18 +5,12 @@ import firebaseApp from '../../firebaseApp'
 import Preloader from '../Preloader/Preloader'
 import ParticipantsList from '../ParticipantsList/ParticipantsList'
 
-// замечание: у PartyPage и PartyCard одинаковые функции fetch
-// мб можно их вынести в одно место ?
-
 const PartyCard: React.FC<any> = ({ partyId }) => {
-  const [name, setName] = useState('')
-  const [imageName, setImageName] = useState('')
+  const [party, setParty]: any = useState({})
   const [pending, setPending] = useState(true)
-  const [authorId, setAuthorId] = useState('')
-  const [guestsIds, setGuestsIds] = useState([])
 
   useEffect(() => {
-    function fetchPartyData() {
+    function fetchParty() {
       setPending(true)
       firebaseApp
         .database()
@@ -24,33 +18,34 @@ const PartyCard: React.FC<any> = ({ partyId }) => {
         .once('value')
         .then((snapshot) => {
           const data = snapshot.val()
-          setImageName(data['imageName'])
-          setName(data['name'])
-          setAuthorId(data['author'])
-          const guestsIdsArray = data.guests
-          if (guestsIdsArray) {
-            setGuestsIds(guestsIdsArray)
-          }
+          setParty({
+            imageName: data.imageName,
+            name: data.name,
+            author: data.author,
+            guests: data.guests ? data.guests : [],
+          })
         })
         .catch((error) => {
           console.log(error)
         })
         .finally(() => setPending(false))
     }
-    fetchPartyData()
+    fetchParty()
   }, [partyId])
 
-  return pending ? (
-    <Preloader />
-  ) : (
+  if (pending) {
+    return <Preloader />
+  }
+
+  return (
     <ImgLink
       to={'/party/' + partyId}
-      imgName={imageName}
+      imgName={party.imageName}
       className={styles.partyCard}
     >
       <div className={styles.partyInfo}>
-        <h2>{name}</h2>
-        <ParticipantsList authorId={authorId} guestsIDs={guestsIds} />
+        <h2>{party.name}</h2>
+        <ParticipantsList authorId={party.author} guestsIDs={party.guests} />
       </div>
     </ImgLink>
   )

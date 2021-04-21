@@ -1,15 +1,23 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { withRouter } from 'react-router'
 import firebaseApp from '../../firebaseApp'
 import styles from './SignUp.module.css'
 import CenterLogo from '../../components/CenterLogo/CenterLogo'
+import Preloader from '../../components/Preloader/Preloader'
 
 const SignUp: React.FC<any> = ({ history }) => {
   const [errorText, setErrorText] = useState('')
+  const [pending, setPending] = useState(false)
+
+  useEffect(() => {
+    setPending(false)
+    return () => {}
+  }, [])
 
   const handleSignUp = useCallback(
     async (event) => {
       event.preventDefault()
+
       const { email, password, fullName, age, aboutMe } = event.target.elements
 
       if (!/\S/.test(fullName)) {
@@ -21,6 +29,13 @@ const SignUp: React.FC<any> = ({ history }) => {
         setErrorText('Empty about you information!')
         return
       }
+
+      if (password.length < 8) {
+        setErrorText('Password length must be at least 8 characters')
+        return
+      }
+
+      setPending(true)
 
       try {
         const userCredential = await firebaseApp
@@ -37,15 +52,19 @@ const SignUp: React.FC<any> = ({ history }) => {
             aboutMe: aboutMe.value.trim(),
           })
 
-        history.push('/')
+        history.push('/settings')
       } catch (error) {
         setErrorText(String(error))
+      } finally {
+        setPending(false)
       }
     },
     [history],
   )
 
-  const handleInputChange = () => setErrorText('')
+  if (pending) {
+    return <Preloader />
+  }
 
   return (
     <section className={styles.signUpSection}>
@@ -57,7 +76,7 @@ const SignUp: React.FC<any> = ({ history }) => {
           name="email"
           type="email"
           placeholder="Email"
-          onChange={handleInputChange}
+          onChange={() => setErrorText('')}
         />
 
         <input
@@ -66,7 +85,7 @@ const SignUp: React.FC<any> = ({ history }) => {
           name="password"
           type="password"
           placeholder="Password"
-          onChange={handleInputChange}
+          onChange={() => setErrorText('')}
         />
 
         <input

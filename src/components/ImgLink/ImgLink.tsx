@@ -21,10 +21,10 @@ const ImgLink: React.FC<Props> = ({ to, imgName, ...rest }) => {
         .then((url) => {
           setUrl(`url(${url})`)
         })
-        .catch((err) => {
+        .catch(() => {
           setUrl(`url(${imageNotFound})`)
         })
-    } catch (error) {
+    } catch {
       setUrl(`url(${imageNotFound})`)
     }
   }, [imgName])

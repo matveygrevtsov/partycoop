@@ -1,90 +1,65 @@
 import React, { useEffect, useState } from 'react'
 import styles from './UserPage.module.css'
-import firebaseApp from '../../firebaseApp'
-import UserLabel from '../../components/UserLabel/UserLabel'
-import NavBar from '../../components/NavBar/NavBar'
-import Preloader from '../../components/Preloader/Preloader'
 import PageNotFound from '../PageNotFound/PageNotFound'
+import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
+import ImgLink from '../../components/ImgLink/ImgLink'
+import PagePreloader from '../../components/PagePreloader/PagePreloader'
 
 const UserPage: React.FC<any> = ({ match }) => {
   const userId = match.params.userId
-
   const [pending, setPending] = useState(true)
-  const [fullName, setFullname] = useState('')
-  const [age, setAge] = useState(0)
-  const [aboutMe, setAboutMe] = useState('')
-  const [userExists, setUserExists] = useState(false)
-  const [organizedPartiesNumber, setOrganizedPartiesNumber] = useState(0)
-  const [participationNumber, setParticipationNumber] = useState(0)
+  const [user, setUser]: any = useState(null)
 
   useEffect(() => {
-    function fetchUserData() {
-      setPending(true)
-      firebaseApp
-        .database()
-        .ref('users/' + userId)
-        .once('value')
-        .then((snapshot) => {
-          const data = snapshot.val()
-          setFullname(data['fullName'])
-          setAge(data['age'])
-          setAboutMe(data['aboutMe'])
-          const organizedPartiesArray = data['organizedParties']
-          const participationArray = data['participation']
-          if (organizedPartiesArray) {
-            setOrganizedPartiesNumber(data['organizedParties'].length)
-          }
-          if (participationArray) {
-            setParticipationNumber(data['participation'].length)
-          }
-          setUserExists(true)
-        })
-        .catch((err) => console.log(err))
-        .finally(() => setPending(false))
-    }
-    fetchUserData()
+    setPending(true)
+    fetchUser(userId)
+      .then((user: any) => {
+        setUser(user)
+      })
+      .finally(() => setPending(false))
   }, [userId])
 
   if (pending) {
-    return <Preloader />
+    return <PagePreloader />
   }
 
-  if (!userExists) {
+  if (!user) {
     return <PageNotFound />
   }
 
   return (
-    <>
-      <NavBar />
-      <section className={styles.userCard}>
-        <div className={styles.userPageContainer}>
-          <UserLabel className={styles.avatar} userId={userId} />
-          <div className={styles.statistics}>
-            <div>
-              <strong className={styles.profileStrong}>
-                {organizedPartiesNumber}
-              </strong>
-              <br />
-              Organized
-            </div>
-            <div>
-              <strong className={styles.profileStrong}>
-                {participationNumber}
-              </strong>
-              <br />
-              Participation
-            </div>
-          </div>
-
-          <div className={styles.userAboutMe}>
+    <section className={styles.userCard}>
+      <div className={styles.userPageContainer}>
+        <ImgLink
+          to={'/user/' + user.id}
+          className={styles.avatar}
+          imageName={user.imageName}
+        />
+        <div className={styles.statistics}>
+          <div>
             <strong className={styles.profileStrong}>
-              {fullName}, {age}
+              {user.organizedParties.length}
             </strong>
-            <p>{aboutMe}</p>
+            <br />
+            Organized
+          </div>
+          <div>
+            <strong className={styles.profileStrong}>
+              {user.participation.length}
+            </strong>
+            <br />
+            Participation
           </div>
         </div>
-      </section>
-    </>
+
+        <div className={styles.userAboutMe}>
+          <strong className={styles.profileStrong}>
+            {user.fullName}, {user.age}
+          </strong>
+          <p>{user.aboutMe}</p>
+        </div>
+      </div>
+    </section>
   )
 }
 

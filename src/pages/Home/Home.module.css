@@ -19,10 +19,3 @@
   padding-bottom: 10px;
   position: relative;
 }
-
-.signOutLink {
-  position: absolute;
-  right: 0;
-  top: 9px;
-  cursor: pointer;
-}

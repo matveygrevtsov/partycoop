@@ -4,32 +4,59 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAddressCard } from '@fortawesome/free-solid-svg-icons'
 import { faClock } from '@fortawesome/free-solid-svg-icons'
 import { faCrown } from '@fortawesome/free-solid-svg-icons'
-import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons'
+import { faGlobeEurope } from '@fortawesome/free-solid-svg-icons'
 import logo from '../../images/logo.png'
 import React from 'react'
+import firebase from '../../firebaseApp'
 
 const SideMenu: React.FC<any> = () => {
   return (
     <nav className={styles.navbar}>
-      <NavLink activeClassName={styles.activeNavLink} className={styles.navLink} to="/settings">
+      <NavLink
+        activeClassName={styles.activeNavLink}
+        className={styles.navLink}
+        to="/settings"
+      >
         <span className={styles.navLinkName}>My account</span>
         <FontAwesomeIcon
           className={styles.iconFontAwesome}
           icon={faAddressCard}
         />
       </NavLink>
-      <NavLink activeClassName={styles.activeNavLink} className={styles.navLink} to="/requests">
+      <NavLink
+        activeClassName={styles.activeNavLink}
+        className={styles.navLink}
+        to="/requests"
+      >
         <span className={styles.navLinkName}>My requests</span>
         <FontAwesomeIcon className={styles.iconFontAwesome} icon={faClock} />
       </NavLink>
-      <NavLink activeClassName={styles.activeNavLink} className={styles.navLink} to="/parties">
+      <NavLink
+        activeClassName={styles.activeNavLink}
+        className={styles.navLink}
+        to="/parties"
+      >
         <span className={styles.navLinkName}>My parties</span>
         <FontAwesomeIcon className={styles.iconFontAwesome} icon={faCrown} />
       </NavLink>
-      <NavLink activeClassName={styles.activeNavLink} className={styles.navLink} to="/search">
-        <span className={styles.navLinkName}>Search</span>
-        <FontAwesomeIcon className={styles.iconFontAwesome} icon={faSearch} />
+      <NavLink
+        activeClassName={styles.activeNavLink}
+        className={styles.navLink}
+        to="/allparties"
+      >
+        <span className={styles.navLinkName}>All parties</span>
+        <FontAwesomeIcon
+          className={styles.iconFontAwesome}
+          icon={faGlobeEurope}
+        />
       </NavLink>
+      <button
+        className={styles.signOutBtn}
+        onClick={() => firebase.auth().signOut()}
+      >
+        <FontAwesomeIcon icon={faSignOutAlt} size="2x" />
+      </button>
 
       <img className={styles.navLogo} src={logo} alt="Logo" />
     </nav>

@@ -1,33 +1,30 @@
 import React from 'react'
 import styles from './DetailedParticipantsList.module.css'
 import crownImageSRC from '../../images/crown.png'
-import UserLabel from '../../components/UserLabel/UserLabel'
+import ImgLink from '../ImgLink/ImgLink'
 
-type Props = {
-  authorId: string
-  guestsIDs: string[]
-}
-
-const DetailedParticipantsList: React.FC<Props> = ({ authorId, guestsIDs }) => {
+const DetailedParticipantsList: React.FC<any> = ({ participants }) => {
   return (
     <>
-      <h2>Participants ({guestsIDs.length + 1})</h2>
+      <h2>Participants ({participants.length})</h2>
       <ul className={styles.detailedParticipantsList}>
-        <li className={styles.detailedListItem}>
-          <img className={styles.crown} src={crownImageSRC} alt={'guestImg'} />
-          <UserLabel
-            className={styles.userLabelDetailed}
-            userId={authorId}
-            detailed={true}
-          ></UserLabel>
-        </li>
-        {guestsIDs.map((id) => (
-          <li key={id} className={styles.detailedListItem}>
-            <UserLabel
+        {participants.map((participant: any, index: number) => (
+          <li key={participant.id} className={styles.detailedListItem}>
+            {index === 0 ? (
+              <img
+                className={styles.crown}
+                src={crownImageSRC}
+                alt="guest"
+              />
+            ) : null}
+            <ImgLink
+              to={'/user/' + participant.id}
+              imageName={participant.imageName}
               className={styles.userLabelDetailed}
-              userId={id}
-              detailed={true}
             />
+            <span className={styles.userDetailedDescription}>
+              {participant.fullName}
+            </span>
           </li>
         ))}
       </ul>

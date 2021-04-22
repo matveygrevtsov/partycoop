@@ -1,35 +1,23 @@
 import React, { useState } from 'react'
 import Button from '../Button/Button'
-import firebaseApp from '../../firebaseApp'
 import styles from './ParticipateButton.module.css'
+import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 
 const ParticipateButton: React.FC<any> = ({ party, user, actionHandle }) => {
   const [pending, setPending] = useState(false)
 
   const participateActionHandle = async () => {
     setPending(true)
-    try {
-      await (() => {
-        firebaseApp
-          .database()
-          .ref('parties/' + party.id)
-          .update({
-            waitingRequests: [user.id, ...(party.waitingRequests || [])],
-          })
-
-        firebaseApp
-          .database()
-          .ref('users/' + user.id)
-          .update({
-            waitingRequests: [party.id, ...(user.waitingRequests || [])],
-          })
-      })()
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setPending(false)
-      actionHandle()
-    }
+    Promise.all([
+      updateData('parties', party.id, {
+        waitingRequests: [user.id, ...party.waitingRequests],
+      }),
+      updateData('users', user.id, {
+        waitingRequests: [party.id, ...user.waitingRequests],
+      }),
+    ])
+      .then(() => actionHandle())
+      .finally(() => setPending(false))
   }
 
   if (party.waitingRequests.includes(user.id)) {

@@ -1,0 +1,38 @@
+.imagePreview {
+  display: block;
+  margin: auto;
+  position: relative;
+  margin-bottom: 20px;
+  max-width: 100%;
+  max-height: 300px;
+}
+
+.uploadImgInput {
+  display: block;
+  margin: auto;
+}
+
+.imagePreviewContainer {
+  position: relative;
+}
+
+.removeImg {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 999;
+}
+
+.removeImg:hover {
+  opacity: 1;
+}
+
+.removeImg .iconFontAwesome {
+  position: absolute;
+  left: calc(50% - 28px);
+  top: 15px;
+  cursor: pointer;
+}

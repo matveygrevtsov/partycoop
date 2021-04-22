@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styles from './CreatePartyPage.module.css'
-import firebaseApp from '../../firebaseApp'
-
-import NavBar from '../../components/NavBar/NavBar'
 import { AuthContext } from '../../Auth'
 import { Link } from 'react-router-dom'
-import Preloader from '../../components/Preloader/Preloader'
-
-const storage = firebaseApp.storage()
+import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
+import UploadImgForm from '../../components/UploadImgForm/UploadImgForm'
+import { createDocument } from '../../firebaseAPIhelpers/createFunctions'
+import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
+import PagePreloader from '../../components/PagePreloader/PagePreloader'
 
 function getDateNow() {
   const date = new Date()
@@ -25,278 +24,251 @@ function isInvalidInputDate(inputDate: string) {
 }
 
 const CreatePartyPage: React.FC<any> = () => {
-  // current user data
   const { currentUser } = useContext(AuthContext)
-  const [organizedParties, setOrganizedParties] = useState([])
-  const currentUserUid = currentUser.uid
-
-  const [name, setName] = useState('')
-  const [submitMessage, setSubmitMessage] = useState('')
-  const [description, setDescription] = useState('')
-  const [pending, setPending] = useState(false)
-  const [minAge, setMinAge] = useState(0)
-  const [maxAge, setMaxAge] = useState(100)
-  const [meetingTime, setMeetingTime] = useState(getDateNow())
+  const currentUserId = currentUser.uid
+  const [user, setUser]: any = useState(null)
+  const [party, setParty]: any = useState({ author: currentUserId })
   const [submited, setSubmited] = useState(false)
-  const [meetingPoint, setMeetingPoint] = useState('')
-
-  const [minGuestsNumber, setMinGuestsNumber] = useState(1)
-  const [maxGuestsNumber, setMaxGuestsNumber] = useState(100)
-
-  const [img, setImg]: any = useState('')
+  const [pending, setPending] = useState(false)
+  const [submitErrorText, setSubmitErrorText] = useState('')
+  const newPartyId = String(new Date().getTime())
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
-    setPending(true)
 
-    if (isInvalidInputDate(meetingTime)) {
-      setSubmitMessage(
+    if (isInvalidInputDate(party.meetingTime)) {
+      setSubmitErrorText(
         'The party must be scheduled at least one day in advance!',
       )
-      setPending(false)
       return
     }
 
-    if (!/\S/.test(name)) {
-      setSubmitMessage('Empty name!')
-      setPending(false)
+    if (!/\S/.test(party.name)) {
+      setSubmitErrorText('Empty name!')
       return
     }
 
-    if (!/\S/.test(description)) {
-      setSubmitMessage('Empty description!')
-      setPending(false)
+    if (!/\S/.test(party.description)) {
+      setSubmitErrorText('Empty description!')
       return
     }
 
-    if (!/\S/.test(meetingPoint)) {
-      setSubmitMessage('Empty meeting point!')
-      setPending(false)
+    if (!/\S/.test(party.meetingPoint)) {
+      setSubmitErrorText('Empty meeting point!')
       return
     }
+
+    if (party.ageInterval[0] > party.ageInterval[1]) {
+      setSubmitErrorText('Wrong age interval !')
+      return
+    }
+
+    if (party.guestsNumberInterval[0] > party.guestsNumberInterval[1]) {
+      setSubmitErrorText('Wrong guests number interval !')
+      return
+    }
+
+    setPending(true)
 
     try {
-      let imgSrc = ''
-      if (img.name) {
-        const storageRef = storage.ref()
-        const fileRef = storageRef.child('images/' + img.name)
-        await fileRef.put(img)
-        imgSrc = img.name
-      }
-
-      const id = String(Date.now())
-
-      firebaseApp
-        .database()
-        .ref('parties/' + id)
-        .set({
-          ageInterval: [minAge, maxAge],
-          author: currentUserUid,
-          description: description,
-          guestsNumberInterval: [minGuestsNumber, maxGuestsNumber],
-          id: id,
-          imageName: imgSrc,
-          meetingTime: meetingTime,
-          meetingPoint: meetingPoint,
-          name: name,
-        })
-
-      firebaseApp
-        .database()
-        .ref('users/' + currentUserUid)
-        .update({
-          organizedParties: [id, ...organizedParties],
-        })
-
-      setSubmitMessage('Successfully saved!')
+      const id = await createDocument('parties', newPartyId, party)
+      await updateData('users', currentUserId, {
+        organizedParties: [id, ...user.organizedParties],
+      })
       setSubmited(true)
-    } catch (error) {
-      setSubmitMessage(error)
+    } catch {
+      setSubmitErrorText('Internet connection error')
     } finally {
       setPending(false)
     }
   }
 
   useEffect(() => {
-    function fetchUserData() {
-      setPending(true)
-      firebaseApp
-        .database()
-        .ref('users/' + currentUserUid)
-        .once('value')
-        .then((snapshot) => {
-          const data = snapshot.val()
-          const organizedPartiesArray = data['organizedParties']
-          if (organizedPartiesArray) {
-            setOrganizedParties(organizedPartiesArray)
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-        .finally(() => setPending(false))
-    }
-    fetchUserData()
-  }, [currentUserUid])
-
-  const onFileChange = (event: any) => {
-    setImg(event.target.files[0])
-  }
+    setPending(true)
+    fetchUser(currentUserId)
+      .then((user: any) => {
+        setUser(user)
+      })
+      .finally(() => setPending(false))
+  }, [currentUserId])
 
   if (pending) {
-    return <Preloader />
+    return <PagePreloader />
   }
 
   if (submited) {
     return (
-      <>
-        <NavBar />
-        <section className={styles.createParty}>
-          <h2>Party successfully created!</h2>
-          <span>
-            You will find it in the <Link to="/parties/">My parties</Link> tab
-          </span>
-        </section>
-      </>
+      <section className={styles.createParty}>
+        <h2>Party successfully created!</h2>
+        <span>
+          You will find it in the <Link to="/parties/">My parties</Link> tab
+        </span>
+      </section>
     )
   }
 
   return (
-    <>
-      <NavBar />
-      <section className={styles.createParty}>
-        <form className={styles.addUserDataForm} onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <span>
-              Name<span className={styles.redText}>*</span>:
-              <input
-                onChange={(event) => setName(event.target.value)}
-                value={name}
-                required
-                className={styles.inputText}
-                type="text"
-              />
-            </span>
-          </div>
-
-          <div className={styles.formGroup}>
-            <span>
-              Age interval<span className={styles.redText}>*</span>:
-            </span>
-            <input
-              onChange={(event) => setMinAge(Number(event.target.value))}
-              value={minAge}
-              type="number"
-              required
-              className={styles.inputText}
-              min="0"
-              max={maxAge}
-            />
-
-            <input
-              onChange={(event) => setMaxAge(Number(event.target.value))}
-              value={maxAge}
-              type="number"
-              required
-              className={styles.inputText}
-              min={minAge}
-            />
-          </div>
-
-          <div className={styles.formGroup}>
-            <span>
-              Guests number interval<span className={styles.redText}>*</span>:
-            </span>
+    <section className={styles.createParty}>
+      <form className={styles.addUserDataForm} onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
+          <span>
+            Name<span className={styles.redText}>*</span>:
             <input
               onChange={(event) =>
-                setMinGuestsNumber(Number(event.target.value))
+                setParty({ ...party, name: event.target.value })
               }
-              value={minGuestsNumber}
-              type="number"
               required
               className={styles.inputText}
-              min="1"
-              max={maxGuestsNumber}
+              type="text"
             />
+          </span>
+        </div>
 
+        <div className={styles.formGroup}>
+          <span>
+            Age interval<span className={styles.redText}>*</span>:
+          </span>
+          <input
+            onChange={(event) =>
+              setParty({
+                ...party,
+                ageInterval: [
+                  Number(event.target.value),
+                  party.ageInterval ? party.ageInterval[1] : 100,
+                ],
+              })
+            }
+            type="number"
+            required
+            className={styles.inputText}
+            min="0"
+            max="100"
+          />
+
+          <input
+            onChange={(event) =>
+              setParty({
+                ...party,
+                ageInterval: [
+                  party.ageInterval ? party.ageInterval[0] : 0,
+                  Number(event.target.value),
+                ],
+              })
+            }
+            type="number"
+            required
+            className={styles.inputText}
+            min="0"
+            max="100"
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <span>
+            Guests number interval<span className={styles.redText}>*</span>:
+          </span>
+          <input
+            onChange={(event) =>
+              setParty({
+                ...party,
+                guestsNumberInterval: [
+                  Number(event.target.value),
+                  party.guestsNumberInterval
+                    ? party.guestsNumberInterval[1]
+                    : 100,
+                ],
+              })
+            }
+            type="number"
+            required
+            className={styles.inputText}
+            min="1"
+            max="100"
+          />
+
+          <input
+            onChange={(event) =>
+              setParty({
+                ...party,
+                guestsNumberInterval: [
+                  party.guestsNumberInterval
+                    ? party.guestsNumberInterval[0]
+                    : 1,
+                  Number(event.target.value),
+                ],
+              })
+            }
+            type="number"
+            required
+            className={styles.inputText}
+            min="1"
+            max="100"
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <span>
+            Meeting point<span className={styles.redText}>*</span>:
             <input
               onChange={(event) =>
-                setMaxGuestsNumber(Number(event.target.value))
+                setParty({ ...party, meetingPoint: event.target.value })
               }
-              value={maxGuestsNumber}
-              type="number"
               required
               className={styles.inputText}
-              min={minGuestsNumber}
+              type="text"
             />
-          </div>
+          </span>
+        </div>
 
-          <div className={styles.formGroup}>
-            <span>
-              Meeting point<span className={styles.redText}>*</span>:
-              <input
-                onChange={(event) => setMeetingPoint(event.target.value)}
-                value={meetingPoint}
-                required
-                className={styles.inputText}
-                type="text"
-              />
-            </span>
-          </div>
+        <div className={styles.formGroup}>
+          <span>
+            Description<span className={styles.redText}>*</span>:
+          </span>
+          <textarea
+            onChange={(event) =>
+              setParty({ ...party, description: event.target.value })
+            }
+            required
+            className={styles.descriptionArea}
+          />
+        </div>
 
-          <div className={styles.formGroup}>
-            <span>
-              Description<span className={styles.redText}>*</span>:
-            </span>
-            <textarea
-              onChange={(event) => setDescription(event.target.value)}
-              value={description}
-              required
-              className={styles.descriptionArea}
-            />
-          </div>
+        <div className={styles.formGroup}>
+          <span>
+            Meeting time<span className={styles.redText}>*</span>:
+          </span>
+          <input
+            required
+            onChange={(event) =>
+              setParty({ ...party, meetingTime: event.target.value })
+            }
+            type="date"
+            name="trip-start"
+            min={getDateNow()}
+            max="2025-12-31"
+            className={styles.chooseDate}
+          ></input>
+        </div>
 
-          <div className={styles.formGroup}>
-            <span>
-              Meeting date<span className={styles.redText}>*</span>:
-            </span>
-            <input
-              required
-              onChange={(event) => setMeetingTime(event.target.value)}
-              type="date"
-              name="trip-start"
-              value={meetingTime}
-              min={getDateNow()}
-              max="2025-12-31"
-              className={styles.chooseDate}
-            ></input>
-          </div>
+        <div className={styles.formGroup}>
+          <UploadImgForm
+            folder="parties"
+            id={newPartyId}
+            setNewImage={(src: string) =>
+              setParty({ ...party, imageName: src })
+            }
+          />
+        </div>
 
-          <div className={styles.formGroup}>
-            <input
-              className={styles.uploadImgBtn}
-              type="file"
-              onChange={onFileChange}
-            />
-          </div>
+        <p className={styles.redText}>{submitErrorText}</p>
 
-          <div className={styles.formGroup}>
-            <button className={styles.submitBtn} type="submit">
-              Save
-            </button>
-            <p
-              className={
-                submitMessage === 'Successfully saved!'
-                  ? styles.greenText
-                  : styles.redText
-              }
-            >
-              {submitMessage}
-            </p>
-          </div>
-        </form>
-      </section>
-    </>
+        <div className={styles.formGroup}>
+          <button className={styles.submitBtn} type="submit">
+            Save
+          </button>
+        </div>
+      </form>
+    </section>
   )
 }
 

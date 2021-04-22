@@ -1,36 +1,29 @@
 import React, { useEffect, useState } from 'react'
 import styles from './PartyCard.module.css'
 import ImgLink from '../ImgLink/ImgLink'
-import firebaseApp from '../../firebaseApp'
 import Preloader from '../Preloader/Preloader'
 import ParticipantsList from '../ParticipantsList/ParticipantsList'
+import { fetchParty, fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 
 const PartyCard: React.FC<any> = ({ partyId }) => {
-  const [party, setParty]: any = useState({})
+  const [party, setParty]: any = useState(null)
   const [pending, setPending] = useState(true)
+  const [participants, setParticipants]: any = useState([])
 
   useEffect(() => {
-    function fetchParty() {
-      setPending(true)
-      firebaseApp
-        .database()
-        .ref('parties/' + partyId)
-        .once('value')
-        .then((snapshot) => {
-          const data = snapshot.val()
-          setParty({
-            imageName: data.imageName,
-            name: data.name,
-            author: data.author,
-            guests: data.guests ? data.guests : [],
-          })
+    setPending(true)
+    fetchParty(partyId)
+      .then((partyResponse: any) => {
+        setParty(partyResponse)
+        Promise.all(
+          [partyResponse.author, ...partyResponse.guests].map((id: string) =>
+            fetchUser(id),
+          ),
+        ).then((participantsResponse: any) => {
+          setParticipants(participantsResponse)
         })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => setPending(false))
-    }
-    fetchParty()
+      })
+      .finally(() => setPending(false))
   }, [partyId])
 
   if (pending) {
@@ -40,12 +33,12 @@ const PartyCard: React.FC<any> = ({ partyId }) => {
   return (
     <ImgLink
       to={'/party/' + partyId}
-      imgName={party.imageName}
+      imageName={party.imageName}
       className={styles.partyCard}
     >
+      <h2 className={styles.partyName}>{party.name}</h2>
       <div className={styles.partyInfo}>
-        <h2>{party.name}</h2>
-        <ParticipantsList authorId={party.author} guestsIDs={party.guests} />
+        <ParticipantsList participants={participants} />
       </div>
     </ImgLink>
   )

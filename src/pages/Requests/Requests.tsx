@@ -1,59 +1,34 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styles from './Requests.module.css'
-import firebaseApp from '../../firebaseApp'
-import NavBar from '../../components/NavBar/NavBar'
 import { AuthContext } from '../../Auth'
 import PartiesList from '../../components/PartiesList/PartiesList'
-import Preloader from '../../components/Preloader/Preloader'
+import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
+import PagePreloader from '../../components/PagePreloader/PagePreloader'
 
 const Requests: React.FC<any> = () => {
-  // current user data
   const { currentUser } = useContext(AuthContext)
-  const [waitingRequests, setWaitingRequests] = useState([])
-  const [rejectedRequests, setRejectedRequests] = useState([])
+  const currentUserId = currentUser.uid
   const [pending, setPending] = useState(true)
-  const currentUserUid = currentUser.uid
+  const [user, setUser]: any = useState(null)
 
   useEffect(() => {
-    function fetchUserData() {
-      setPending(true)
-      firebaseApp
-        .database()
-        .ref('users/' + currentUserUid)
-        .once('value')
-        .then((snapshot) => {
-          const data = snapshot.val()
-          const userWaitingRequests = data['waitingRequests']
-          const userRejectedRequests = data['rejectedRequests']
-          if (userWaitingRequests) {
-            setWaitingRequests(userWaitingRequests)
-          }
-          if (userRejectedRequests) {
-            setRejectedRequests(userRejectedRequests)
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-        .finally(() => setPending(false))
-    }
-    fetchUserData()
-  }, [currentUserUid])
+    setPending(true)
+    fetchUser(currentUserId)
+      .then((userResponse: any) => setUser(userResponse))
+      .finally(() => setPending(false))
+  }, [currentUserId])
 
   if (pending) {
-    return <Preloader />
+    return <PagePreloader />
   }
 
   return (
-    <>
-      <NavBar />
-      <section className={styles.myRequests}>
-        <h2>Waiting requests ({waitingRequests.length})</h2>
-        <PartiesList partiesIDs={waitingRequests} />
-        <h2>Rejected requests ({rejectedRequests.length})</h2>
-        <PartiesList partiesIDs={rejectedRequests} />
-      </section>
-    </>
+    <section className={styles.myRequests}>
+      <h2>Waiting requests ({user.waitingRequests.length})</h2>
+      <PartiesList partiesIDs={user.waitingRequests} />
+      <h2>Rejected requests ({user.rejectedRequests.length})</h2>
+      <PartiesList partiesIDs={user.rejectedRequests} />
+    </section>
   )
 }
 

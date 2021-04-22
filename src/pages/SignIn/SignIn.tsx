@@ -17,7 +17,7 @@ const SignIn: React.FC<any> = ({ history }) => {
         await firebaseApp
           .auth()
           .signInWithEmailAndPassword(email.value, password.value)
-        history.push('/')
+        history.push('/settings')
       } catch (error) {
         setErrorText(String(error))
       }

@@ -1,35 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
-import firebaseApp from '../../firebaseApp'
-import preloaderImgURL from '../../images/preloader.gif'
-import imageNotFound from '../../images/imageNotFound.jpg'
+import noImageSelected from '../../images/noImageSelected.png'
 
 type Props = {
   to: string
-  imgName: string
+  imageName: string
   className: string
 }
 
-const ImgLink: React.FC<Props> = ({ to, imgName, ...rest }) => {
-  const [url, setUrl] = useState(`url(${preloaderImgURL})`)
-
-  useEffect(() => {
-    try {
-      const ref = firebaseApp.storage().ref('images').child(imgName)
-      ref
-        .getDownloadURL()
-        .then((url) => {
-          setUrl(`url(${url})`)
-        })
-        .catch(() => {
-          setUrl(`url(${imageNotFound})`)
-        })
-    } catch {
-      setUrl(`url(${imageNotFound})`)
-    }
-  }, [imgName])
-
-  return <Link to={to} {...rest} style={{ backgroundImage: url }} />
+const ImgLink: React.FC<Props> = ({ to, imageName, ...rest }) => {
+  const url = imageName ? imageName : noImageSelected
+  return (
+    <Link to={to} {...rest} style={{ backgroundImage: 'url(' + url + ')' }} />
+  )
 }
 
 export default ImgLink

@@ -1,29 +1,33 @@
 import React, { useState } from 'react'
 import styles from './ParticipantsList.module.css'
 import crownImageSRC from '../../images/crown.png'
-import UserLabel from '../../components/UserLabel/UserLabel'
 import DetailedParticipantsList from '../DetailedParticipantsList/DetailedParticipantsList'
+import ImgLink from '../ImgLink/ImgLink'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-
-type Props = {
-  authorId: string
-  guestsIDs: string[]
-}
-
-const ParticipantsList: React.FC<Props> = ({ authorId, guestsIDs }) => {
+const ParticipantsList: React.FC<any> = ({ participants }) => {
   const [showDetailedList, setShowDetailedList] = useState(false)
   return (
     <>
       <ul className={styles.partyParticipants}>
-        <li key={authorId}>
-          <img className={styles.crown} src={crownImageSRC} alt={'guestImg'} />
-          <UserLabel userId={authorId} className={styles.partyParticipant} />
-        </li>
-        {guestsIDs.slice(0, 3).map((id: string) => (
-          <li key={id}>
-            <UserLabel userId={id} className={styles.partyParticipant} />
+        {participants.slice(0, 4).map((participant: any, index: number) => (
+          <li key={participant.id}>
+            {index === 0 ? (
+              <img
+                className={styles.crown}
+                src={crownImageSRC}
+                alt={'partyAuthor'}
+              />
+            ) : null}
+            <ImgLink
+              to={'/user/' + participant.id}
+              imageName={participant.imageName}
+              className={styles.partyParticipant}
+            />
           </li>
         ))}
+
         <li>
           <button
             onClick={() => setShowDetailedList(!showDetailedList)}
@@ -43,9 +47,9 @@ const ParticipantsList: React.FC<Props> = ({ authorId, guestsIDs }) => {
           className={styles.closeListBtn}
           onClick={() => setShowDetailedList(false)}
         >
-          Close
+          <FontAwesomeIcon size="3x" className={styles.iconFontAwesome} icon={faTimes} />
         </button>
-        <DetailedParticipantsList authorId={authorId} guestsIDs={guestsIDs} />
+        <DetailedParticipantsList participants={participants} />
       </div>
     </>
   )

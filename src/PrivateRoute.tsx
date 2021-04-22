@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { Route, Redirect } from 'react-router-dom'
 import { AuthContext } from './Auth'
+import NavBar from './components/NavBar/NavBar'
 
 const PrivateRoute: React.FC<any> = ({
   component: RouteComponent,
@@ -12,7 +13,10 @@ const PrivateRoute: React.FC<any> = ({
       {...rest}
       render={(routeProps) =>
         !!currentUser ? (
-          <RouteComponent {...routeProps} />
+          <>
+            <NavBar />
+            <RouteComponent {...routeProps} />
+          </>
         ) : (
           <Redirect to={'/welcome'} />
         )

@@ -9,7 +9,6 @@
 
 .partyParticipant {
   border-radius: 50%;
-  background-color: #808080;
   float: left;
   background-size: cover;
   background-position: center center;
@@ -79,23 +78,22 @@
   position: fixed;
   height: 200px;
   max-width: 400px;
-  width: 100%;
+  width: calc(100% - 30px);
   background-color: white;
   box-sizing: border-box;
   padding: 15px;
-  top: 75px;
+  top: 90px;
   left: calc(50% - 200px);
   max-height: 600px;
   height: calc(100% - 75px);
   z-index: 999;
   overflow-y: auto;
-  border: solid;
-  border-radius: 2%;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 @media (max-width: 400px) {
   .detailedListWindow {
-    left: 0;
+    left: 15px;
   }
 }
 
@@ -103,6 +101,16 @@
   position: absolute;
   top: 35px;
   right: 15px;
-  height: 31px;
-  cursor: pointer
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+  display: block;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}
+
+.iconFontAwesome {
+  height: 35px;
+  width: 35px;
 }

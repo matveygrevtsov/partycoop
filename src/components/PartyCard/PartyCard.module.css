@@ -39,3 +39,13 @@
   right: 15px;
   bottom: 15px;
 }
+
+.partyName {
+  margin-top: 0;
+  margin-bottom: 0;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 100%;
+  z-index: 99;
+}

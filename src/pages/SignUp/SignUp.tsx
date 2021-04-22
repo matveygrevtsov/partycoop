@@ -1,36 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { withRouter } from 'react-router'
 import firebaseApp from '../../firebaseApp'
 import styles from './SignUp.module.css'
 import CenterLogo from '../../components/CenterLogo/CenterLogo'
-import Preloader from '../../components/Preloader/Preloader'
+import { createDocument } from '../../firebaseAPIhelpers/createFunctions'
+import PagePreloader from '../../components/PagePreloader/PagePreloader'
 
 const SignUp: React.FC<any> = ({ history }) => {
   const [errorText, setErrorText] = useState('')
   const [pending, setPending] = useState(false)
-
-  useEffect(() => {
-    setPending(false)
-    return () => {}
-  }, [])
 
   const handleSignUp = useCallback(
     async (event) => {
       event.preventDefault()
 
       const { email, password, fullName, age, aboutMe } = event.target.elements
-
-      if (!/\S/.test(fullName)) {
+      if (!/\S/.test(fullName.value)) {
         setErrorText('Empty fullname!')
         return
       }
 
-      if (!/\S/.test(aboutMe)) {
+      if (!/\S/.test(aboutMe.value)) {
         setErrorText('Empty about you information!')
         return
       }
 
-      if (password.length < 8) {
+      if (password.value.length < 8) {
         setErrorText('Password length must be at least 8 characters')
         return
       }
@@ -41,17 +36,13 @@ const SignUp: React.FC<any> = ({ history }) => {
         const userCredential = await firebaseApp
           .auth()
           .createUserWithEmailAndPassword(email.value, password.value)
-        const id = userCredential.user?.uid
-        firebaseApp
-          .database()
-          .ref('users/' + id)
-          .set({
-            id: id,
-            fullName: fullName.value.trim(),
-            age: age.value,
-            aboutMe: aboutMe.value.trim(),
-          })
-
+        const id: any = userCredential.user?.uid
+        createDocument('users', id, {
+          id: id,
+          fullName: fullName.value.trim(),
+          age: age.value,
+          aboutMe: aboutMe.value.trim(),
+        })
         history.push('/settings')
       } catch (error) {
         setErrorText(String(error))
@@ -63,7 +54,7 @@ const SignUp: React.FC<any> = ({ history }) => {
   )
 
   if (pending) {
-    return <Preloader />
+    return <PagePreloader />
   }
 
   return (
@@ -76,7 +67,9 @@ const SignUp: React.FC<any> = ({ history }) => {
           name="email"
           type="email"
           placeholder="Email"
-          onChange={() => setErrorText('')}
+          onChange={() => {
+            setErrorText('')
+          }}
         />
 
         <input
@@ -94,6 +87,8 @@ const SignUp: React.FC<any> = ({ history }) => {
           className={styles.inputText}
           name="fullName"
           placeholder="Fullname"
+          onChange={() => setErrorText('')}
+          pattern="[a-zA-Z]*"
         />
 
         <input
@@ -103,6 +98,7 @@ const SignUp: React.FC<any> = ({ history }) => {
           name="age"
           placeholder="Age"
           min="0"
+          onChange={() => setErrorText('')}
         />
 
         <textarea
@@ -110,6 +106,7 @@ const SignUp: React.FC<any> = ({ history }) => {
           placeholder="Write a few words about yourself ..."
           required
           className={styles.aboutMeArea}
+          onChange={() => setErrorText('')}
         />
 
         <p className={styles.errorText}>{errorText}</p>

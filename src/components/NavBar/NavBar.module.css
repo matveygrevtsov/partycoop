@@ -25,19 +25,42 @@
 
 .navLogo {
   height: 60px;
-  display: inline-block;
-  float: right;
+  width: 60px;
   box-sizing: border-box;
   padding: 5px;
-  margin-right: 10px;
+  position: absolute;
+  left: calc(50% - 30px);
+  top: 0;
+}
+
+.signOutBtn {
+  display: block;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  position: absolute;
+  padding: 0;
+  height: 60px;
+  right: 15px;
+  top: 0;
+  color: #c82067;
+}
+
+@media (max-width: 1200px) {
+  .navLogo {
+    display: none;
+  }
 }
 
 @media (max-width: 610px) {
-  .navLogo,
   .navLinkName {
     display: none;
   }
-  .navLink {
-    width: 25%;
+  .navLink,
+  .signOutBtn {
+    width: 20%;
+  }
+  .signOutBtn {
+    right: 0;
   }
 }

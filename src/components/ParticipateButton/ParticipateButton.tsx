@@ -3,11 +3,11 @@ import Button from '../Button/Button'
 import styles from './ParticipateButton.module.css'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 
-const ParticipateButton: React.FC<any> = ({ party, user, actionHandle }) => {
-  const [pending, setPending] = useState(false)
+const ParticipateButton: React.FC<any> = ({ party, user, setConnection }) => {
+  const [status, setStatus] = useState('active')
 
-  const participateActionHandle = async () => {
-    setPending(true)
+  const participateActionHandle = () => {
+    setStatus('pending')
     Promise.all([
       updateData('parties', party.id, {
         waitingRequests: [user.id, ...party.waitingRequests],
@@ -16,18 +16,15 @@ const ParticipateButton: React.FC<any> = ({ party, user, actionHandle }) => {
         waitingRequests: [party.id, ...user.waitingRequests],
       }),
     ])
-      .then(() => actionHandle())
-      .finally(() => setPending(false))
+      .then(() => setStatus('submited'))
+      .catch(() => setConnection(false))
   }
 
-  if (party.waitingRequests.includes(user.id)) {
+  if (status === 'submited' || party.waitingRequests.includes(user.id)) {
     return <span className={styles.greenText}>Your request has been sent!</span>
   }
   if (party.guests.includes(user.id)) {
     return <span className={styles.greenText}>You are a guest!</span>
-  }
-  if (party.waitingRequests.includes(user.id)) {
-    return <span className={styles.greenText}>Your request has been sent!</span>
   }
   if (party.author === user.id) {
     return <span className={styles.greenText}>You are the author!</span>
@@ -57,7 +54,7 @@ const ParticipateButton: React.FC<any> = ({ party, user, actionHandle }) => {
 
   return (
     <Button
-      pending={pending}
+      pending={status === 'pending'}
       onClick={participateActionHandle}
       text={'participate!'}
     />

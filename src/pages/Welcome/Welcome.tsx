@@ -8,7 +8,6 @@ import Button from '../../components/Button/Button'
 const Home: React.FC<any> = () => {
   return (
     <section className={styles.welcomeSection}>
-      <h2>Привет</h2>
       <CenterLogo />
       <div>
         <h1>Welcome to Partycoop !</h1>

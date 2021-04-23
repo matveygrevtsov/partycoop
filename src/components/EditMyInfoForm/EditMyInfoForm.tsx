@@ -4,15 +4,16 @@ import { AuthContext } from '../../Auth'
 import UploadImgForm from '../UploadImgForm/UploadImgForm'
 import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
-import PagePreloader from '../PagePreloader/PagePreloader'
+import Preloader from '../Preloader/Preloader'
+import InternetConnectionProblem from '../InternetConnectionProblem/InternetConnectionProblem'
 
 const EditMyInfoForm: React.FC<any> = () => {
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
-
   const [pending, setPending] = useState(true)
   const [user, setUser]: any = useState(null)
   const [submitMessage, setSubmitMessage] = useState('')
+  const [connection, setConnection] = useState(true)
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
@@ -30,6 +31,7 @@ const EditMyInfoForm: React.FC<any> = () => {
     setPending(true)
     updateData('users', currentUserId, user)
       .then(() => setSubmitMessage('Successfully saved!'))
+      .catch(() => setConnection(false))
       .finally(() => setPending(false))
   }
 
@@ -39,11 +41,16 @@ const EditMyInfoForm: React.FC<any> = () => {
       .then((user: any) => {
         setUser(user)
       })
+      .catch(() => setConnection(false))
       .finally(() => setPending(false))
   }, [currentUserId])
 
   if (pending) {
-    return <PagePreloader />
+    return <Preloader />
+  }
+
+  if (!connection) {
+    return <InternetConnectionProblem />
   }
 
   return (

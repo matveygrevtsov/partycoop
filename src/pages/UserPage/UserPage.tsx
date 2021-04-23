@@ -4,23 +4,34 @@ import PageNotFound from '../PageNotFound/PageNotFound'
 import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import ImgLink from '../../components/ImgLink/ImgLink'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
+import { Link } from 'react-router-dom'
+import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 
 const UserPage: React.FC<any> = ({ match }) => {
   const userId = match.params.userId
   const [pending, setPending] = useState(true)
   const [user, setUser]: any = useState(null)
+  const [connection, setConnection] = useState(true)
 
   useEffect(() => {
+    setConnection(true)
     setPending(true)
     fetchUser(userId)
-      .then((user: any) => {
-        setUser(user)
-      })
+      .then(
+        (user: any) => {
+          setUser(user)
+        },
+        () => setConnection(false),
+      )
       .finally(() => setPending(false))
   }, [userId])
 
   if (pending) {
     return <PagePreloader />
+  }
+
+  if (!connection) {
+    return <InternetConnectionProblem />
   }
 
   if (!user) {
@@ -36,20 +47,20 @@ const UserPage: React.FC<any> = ({ match }) => {
           imageName={user.imageName}
         />
         <div className={styles.statistics}>
-          <div>
+          <Link to={'/organized_and_participation/' + userId}>
             <strong className={styles.profileStrong}>
               {user.organizedParties.length}
             </strong>
             <br />
             Organized
-          </div>
-          <div>
+          </Link>
+          <Link to={'/organized_and_participation/' + userId}>
             <strong className={styles.profileStrong}>
               {user.participation.length}
             </strong>
             <br />
             Participation
-          </div>
+          </Link>
         </div>
 
         <div className={styles.userAboutMe}>

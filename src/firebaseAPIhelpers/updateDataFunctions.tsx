@@ -1,8 +1,14 @@
 import firebaseApp from '../firebaseApp'
+import { rejectOnTimeout } from './fetchFunctions'
 
-export async function updateData(folder: string, id: string, values: any) {
-  firebaseApp
-    .database()
-    .ref(folder + '/' + id)
-    .update(values)
+const maxExpectation = 5000
+
+export function updateData(folder: string, id: string, values: any) {
+  return rejectOnTimeout(
+    firebaseApp
+      .database()
+      .ref(folder + '/' + id)
+      .update(values),
+    maxExpectation,
+  )
 }

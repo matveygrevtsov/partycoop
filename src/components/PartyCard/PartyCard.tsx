@@ -5,7 +5,7 @@ import Preloader from '../Preloader/Preloader'
 import ParticipantsList from '../ParticipantsList/ParticipantsList'
 import { fetchParty, fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 
-const PartyCard: React.FC<any> = ({ partyId }) => {
+const PartyCard: React.FC<any> = ({ partyId, setConnection }) => {
   const [party, setParty]: any = useState(null)
   const [pending, setPending] = useState(true)
   const [participants, setParticipants]: any = useState([])
@@ -15,16 +15,18 @@ const PartyCard: React.FC<any> = ({ partyId }) => {
     fetchParty(partyId)
       .then((partyResponse: any) => {
         setParty(partyResponse)
-        Promise.all(
+        return Promise.all(
           [partyResponse.author, ...partyResponse.guests].map((id: string) =>
             fetchUser(id),
           ),
-        ).then((participantsResponse: any) => {
-          setParticipants(participantsResponse)
-        })
+        )
       })
-      .finally(() => setPending(false))
-  }, [partyId])
+      .then((participantsResponse: any) => {
+        setParticipants(participantsResponse)
+        setPending(false)
+      })
+      .catch(() => setConnection(false))
+  }, [partyId, setConnection])
 
   if (pending) {
     return <Preloader />

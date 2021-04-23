@@ -11,7 +11,7 @@ import UserPage from './pages/UserPage/UserPage'
 import PartyPage from './pages/PartyPage/PartyPage'
 import Requests from './pages/Requests/Requests'
 import CreatePartyPage from './pages/CreatePartyPage/CreatePartyPage'
-import MyPartiesPage from './pages/MyPartiesPage/MyPartiesPage'
+import OrganizedAndParticipationPartiesPage from './pages/OrganizedAndParticipationPartiesPage/OrganizedAndParticipationPartiesPage'
 import PageNotFound from './pages/PageNotFound/PageNotFound'
 import AllParties from './pages/AllParties/AllParties'
 
@@ -26,7 +26,11 @@ const App: React.FC<any> = () => {
             <Route exact path="/signup" component={SignUp} />
 
             <PrivateRoute exact path="/allparties" component={AllParties} />
-            <PrivateRoute exact path="/parties" component={MyPartiesPage} />
+            <PrivateRoute
+              exact
+              path="/organized_and_participation/:userId"
+              component={OrganizedAndParticipationPartiesPage}
+            />
             <PrivateRoute exact path="/requests" component={Requests} />
             <PrivateRoute exact path="/user/:userId" component={UserPage} />
             <PrivateRoute exact path="/party/:partyId" component={PartyPage} />

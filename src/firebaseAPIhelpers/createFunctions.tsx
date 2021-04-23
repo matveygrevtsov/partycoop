@@ -1,13 +1,15 @@
 import firebaseApp from '../firebaseApp'
+import { rejectOnTimeout } from './fetchFunctions'
 
-export async function createDocument(folder: string, id: string, data: any) {
-  try {
-    await firebaseApp
+const maxExpectation = 5000
+
+export function createDocument(folder: string, id: string, data: any) {
+  return rejectOnTimeout(
+    firebaseApp
       .database()
       .ref(folder + '/' + id)
       .set(data)
-    return id
-  } catch (error) {
-    throw new Error(error)
-  }
+      .then(() => id),
+    maxExpectation,
+  )
 }

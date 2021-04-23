@@ -10,59 +10,55 @@ const PartyControlRequestsForm: React.FC<any> = ({
   party,
   waitingRequests,
   rejectedRequests,
+  setConnection,
 }) => {
-  const handleAccept = async (event: any) => {
+  const handleAccept = (event: any) => {
     const acceptedUserId = event.target.id
-    try {
-      await (() => {
-        updateData('parties', party.id, {
-          waitingRequests: party.waitingRequests.filter(
-            (id: string) => id !== acceptedUserId,
-          ),
-          guests: [acceptedUserId, ...party.guests],
-        })
 
-        updateData('users', acceptedUserId, {
-          participation: [
-            party.id,
-            ...(waitingRequests[acceptedUserId].participation || []),
-          ],
-          waitingRequests: waitingRequests[
-            acceptedUserId
-          ].waitingRequests.filter((id: string) => id !== party.id),
-        })
-      })()
-      handleAction({ type: 'accept', userId: acceptedUserId })
-    } catch (error) {
-      console.log(error)
-    }
+    Promise.all([
+      updateData('parties', party.id, {
+        waitingRequests: party.waitingRequests.filter(
+          (id: string) => id !== acceptedUserId,
+        ),
+        guests: [acceptedUserId, ...party.guests],
+      }),
+      updateData('users', acceptedUserId, {
+        participation: [
+          party.id,
+          ...(waitingRequests[acceptedUserId].participation || []),
+        ],
+        waitingRequests: waitingRequests[acceptedUserId].waitingRequests.filter(
+          (id: string) => id !== party.id,
+        ),
+      }),
+    ])
+      .then(() => handleAction({ type: 'accept', userId: acceptedUserId }))
+      .catch(() => setConnection(false))
   }
 
   const handleReject = async (event: any) => {
     const rejectedUserId = event.target.id
-    try {
-      await (() => {
-        updateData('parties', party.id, {
-          waitingRequests: party.waitingRequests.filter(
-            (id: string) => id !== rejectedUserId,
-          ),
-          rejectedRequests: [rejectedUserId, ...party.rejectedRequests],
-        })
 
-        updateData('users', rejectedUserId, {
-          rejectedRequests: [
-            party.id,
-            ...(waitingRequests[rejectedUserId].rejectedRequests || []),
-          ],
-          waitingRequests: waitingRequests[
-            rejectedUserId
-          ].waitingRequests.filter((id: string) => id !== party.id),
-        })
-      })()
-      handleAction({ type: 'reject', userId: rejectedUserId })
-    } catch (error) {
-      console.log(error)
-    }
+    Promise.all([
+      updateData('parties', party.id, {
+        waitingRequests: party.waitingRequests.filter(
+          (id: string) => id !== rejectedUserId,
+        ),
+        rejectedRequests: [rejectedUserId, ...party.rejectedRequests],
+      }),
+
+      updateData('users', rejectedUserId, {
+        rejectedRequests: [
+          party.id,
+          ...(waitingRequests[rejectedUserId].rejectedRequests || []),
+        ],
+        waitingRequests: waitingRequests[rejectedUserId].waitingRequests.filter(
+          (id: string) => id !== party.id,
+        ),
+      }),
+    ])
+      .then(() => handleAction({ type: 'reject', userId: rejectedUserId }))
+      .catch(() => setConnection(false))
   }
 
   return (

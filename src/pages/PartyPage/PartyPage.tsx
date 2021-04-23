@@ -16,6 +16,7 @@ import {
   fetchUsers,
 } from '../../firebaseAPIhelpers/fetchFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
+import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 
 const PartyPage: React.FC<any> = ({ match }) => {
   const { currentUser } = useContext(AuthContext)
@@ -29,22 +30,8 @@ const PartyPage: React.FC<any> = ({ match }) => {
   const [author, setAuthor]: any = useState(null)
 
   const [pending, setPending] = useState(true)
-  const [partyExists, setPartyExists] = useState(false)
 
-  const participateHandle = () => {
-    setUser({
-      ...user,
-      waitingRequests: [partyId, ...user.waitingRequests],
-    })
-    setParty({
-      ...party,
-      waitingRequests: [currentUserId, ...party.waitingRequests],
-    })
-    setWaitingRequests({
-      [currentUserId]: user,
-      ...waitingRequests,
-    })
-  }
+  const [connection, setConnection] = useState(true)
 
   const requestsControlActionHandle = (action: any) => {
     setParty({
@@ -84,41 +71,46 @@ const PartyPage: React.FC<any> = ({ match }) => {
   useEffect(() => {
     setPending(true)
     Promise.all([
-      fetchParty(partyId).then((partyResponse: any) => {
-        setParty(partyResponse)
-      }),
+      fetchParty(partyId).then(
+        (partyResponse: any) => {
+          setParty(partyResponse)
+          return partyResponse
+        },
+        () => console.log('вечеринка не найдена!'),
+      ),
       fetchUser(currentUserId).then((userResponse) => {
         setUser(userResponse)
+        return userResponse
       }),
     ])
-      .then(() => setPartyExists(true))
+      .then((responseArr) =>
+        Promise.all([
+          fetchUser(responseArr[0].author).then((responseAuthor) =>
+            setAuthor(responseAuthor),
+          ),
+          fetchUsers(responseArr[0].guests).then((users) => setGuests(users)),
+          fetchUsers(responseArr[0].waitingRequests).then((users) =>
+            setWaitingRequests(users),
+          ),
+          fetchUsers(responseArr[0].rejectedRequests).then((users) =>
+            setRejectedRequests(users),
+          ),
+        ]),
+      )
+      .catch(() => setConnection(false))
       .finally(() => setPending(false))
   }, [partyId, currentUserId])
-
-  useEffect(() => {
-    setPending(true)
-    if (partyExists) {
-      Promise.all([
-        fetchUser(party.author).then((responseAuthor) =>
-          setAuthor(responseAuthor),
-        ),
-        fetchUsers(party.guests).then((users) => setGuests(users)),
-        fetchUsers(party.waitingRequests).then((users) =>
-          setWaitingRequests(users),
-        ),
-        fetchUsers(party.rejectedRequests).then((users) =>
-          setRejectedRequests(users),
-        ),
-      ]).finally(() => setPending(false))
-    }
-  }, [partyExists, party])
 
   if (pending) {
     return <PagePreloader />
   }
 
-  if (!partyExists) {
+  if (!party) {
     return <PageNotFound />
+  }
+
+  if (!connection) {
+    return <InternetConnectionProblem />
   }
 
   return (
@@ -133,9 +125,9 @@ const PartyPage: React.FC<any> = ({ match }) => {
       <div className={styles.partyBody}>
         <div className={styles.partyActions}>
           <ParticipateButton
-            actionHandle={participateHandle}
             party={party}
             user={user}
+            setConnection={setConnection}
           />
           <ParticipantsList participants={[author, ...Object.values(guests)]} />
         </div>
@@ -185,6 +177,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
             waitingRequests={waitingRequests}
             rejectedRequests={rejectedRequests}
             party={party}
+            setConnection={setConnection}
           />
         ) : null}
       </div>

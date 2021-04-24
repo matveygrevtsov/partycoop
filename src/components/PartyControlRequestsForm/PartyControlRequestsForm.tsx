@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './PartyControlRequestsForm.module.css'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 import ImgLink from '../ImgLink/ImgLink'
@@ -12,7 +12,10 @@ const PartyControlRequestsForm: React.FC<any> = ({
   rejectedRequests,
   setConnection,
 }) => {
+  const [pending, setPending] = useState(false)
+
   const handleAccept = (event: any) => {
+    setPending(true)
     const acceptedUserId = event.target.id
 
     Promise.all([
@@ -34,9 +37,11 @@ const PartyControlRequestsForm: React.FC<any> = ({
     ])
       .then(() => handleAction({ type: 'accept', userId: acceptedUserId }))
       .catch(() => setConnection(false))
+      .finally(() => setPending(false))
   }
 
   const handleReject = async (event: any) => {
+    setPending(true)
     const rejectedUserId = event.target.id
 
     Promise.all([
@@ -59,6 +64,7 @@ const PartyControlRequestsForm: React.FC<any> = ({
     ])
       .then(() => handleAction({ type: 'reject', userId: rejectedUserId }))
       .catch(() => setConnection(false))
+      .finally(() => setPending(false))
   }
 
   return (
@@ -76,6 +82,7 @@ const PartyControlRequestsForm: React.FC<any> = ({
                 className={styles.requestIcon}
               />
               <button
+                disabled={pending}
                 className={styles.acceptRequestsBtn}
                 id={id}
                 onClick={handleAccept}
@@ -83,6 +90,7 @@ const PartyControlRequestsForm: React.FC<any> = ({
                 Accept
               </button>
               <button
+                disabled={pending}
                 className={styles.rejectedRequestsBtn}
                 id={id}
                 onClick={handleReject}

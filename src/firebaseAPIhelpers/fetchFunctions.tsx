@@ -27,7 +27,7 @@ export async function fetchParty(id: string) {
           author: data.author,
           description: data.description,
           guestsNumberInterval: data.guestsNumberInterval || [],
-          imageName: data.imageName,
+          imageName: data.imageName ? data.imageName : '',
           meetingPoint: data.meetingPoint,
           meetingTime: data.meetingTime,
           name: data.name,
@@ -53,7 +53,7 @@ export async function fetchUser(id: string) {
           age: data.age,
           fullName: data.fullName,
           id: data.id,
-          imageName: data.imageName,
+          imageName: data.imageName ? data.imageName : '',
           organizedParties: data.organizedParties || [],
           waitingRequests: data.waitingRequests || [],
           rejectedRequests: data.rejectedRequests || [],
@@ -83,7 +83,12 @@ export async function fetchAllPartiesIdsBesides(unwantedIds: string[]) {
       .once('value')
       .then((snapshot: any) => {
         const data = snapshot.val()
-        return Object.keys(data).filter((key) => !unwantedIds.includes(key))
+        if (!data) {
+          return []
+        }
+        return Object.keys(data).filter(
+          (key) => !(unwantedIds || []).includes(key),
+        )
       }),
     maxExpectation,
   )

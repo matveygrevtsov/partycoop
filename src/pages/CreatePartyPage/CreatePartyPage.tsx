@@ -7,6 +7,7 @@ import UploadImgForm from '../../components/UploadImgForm/UploadImgForm'
 import { createDocument } from '../../firebaseAPIhelpers/createFunctions'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
+import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 
 function getDateNow() {
   const date = new Date()
@@ -24,63 +25,81 @@ function isInvalidInputDate(inputDate: string) {
 }
 
 const CreatePartyPage: React.FC<any> = () => {
+  const [connection, setConnection] = useState(true)
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
   const [user, setUser]: any = useState(null)
-  const [party, setParty]: any = useState({ author: currentUserId })
+  const [party, setParty]: any = useState({
+    author: currentUserId,
+    imageName: '',
+    ageInterval: ['', ''],
+    guestsNumberInterval: ['', ''],
+    description: '',
+    name: '',
+    meetingPoint: '',
+    meetingTime: '',
+  })
   const [submited, setSubmited] = useState(false)
   const [pending, setPending] = useState(false)
-  const [submitErrorText, setSubmitErrorText] = useState('')
+  const [errorText, setErrorText] = useState('')
   const newPartyId = String(new Date().getTime())
+
+  const inputDataWarning = (party: any) => {
+    if (!party.name.trim()) {
+      return ' '
+    }
+    const age1 = Number(party.ageInterval[0])
+    const age2 = Number(party.ageInterval[1])
+
+    if (age1 < 0 || age1 > age2) {
+      return 'Wrong age interval!'
+    }
+
+    const guestNumber1 = Number(party.guestsNumberInterval[0])
+    const guestNumber2 = Number(party.guestsNumberInterval[1])
+
+    if (guestNumber1 < 0 || guestNumber1 > guestNumber2) {
+      return 'Wrong guests number interval!'
+    }
+
+    if (guestNumber1 < 1) {
+      return 'There must be at least one guest at the party!'
+    }
+
+    if (!party.meetingPoint.trim()) {
+      return 'Empty meeting point!'
+    }
+
+    if (isInvalidInputDate(party.meetingTime)) {
+      return 'The party must be scheduled at least one day in advance!'
+    }
+
+    if (!party.description.trim()) {
+      return 'Empty description!'
+    }
+    return ''
+  }
 
   const handleSubmit = async (event: any) => {
     event.preventDefault()
 
-    if (isInvalidInputDate(party.meetingTime)) {
-      setSubmitErrorText(
-        'The party must be scheduled at least one day in advance!',
-      )
-      return
-    }
-
-    if (!/\S/.test(party.name)) {
-      setSubmitErrorText('Empty name!')
-      return
-    }
-
-    if (!/\S/.test(party.description)) {
-      setSubmitErrorText('Empty description!')
-      return
-    }
-
-    if (!/\S/.test(party.meetingPoint)) {
-      setSubmitErrorText('Empty meeting point!')
-      return
-    }
-
-    if (party.ageInterval[0] > party.ageInterval[1]) {
-      setSubmitErrorText('Wrong age interval !')
-      return
-    }
-
-    if (party.guestsNumberInterval[0] > party.guestsNumberInterval[1]) {
-      setSubmitErrorText('Wrong guests number interval !')
+    const warning = inputDataWarning(party)
+    if (warning !== '') {
+      setErrorText(warning)
       return
     }
 
     setPending(true)
 
-    try {
-      const id = await createDocument('parties', newPartyId, party)
-      await updateData('users', currentUserId, {
-        organizedParties: [id, ...user.organizedParties],
+    createDocument('parties', newPartyId, party)
+      .then((id: any) => {
+        return updateData('users', currentUserId, {
+          organizedParties: [id, ...user.organizedParties],
+        })
       })
-      setSubmited(true)
-    } catch {
-      setSubmitErrorText('Internet connection error')
-    } finally {
-      setPending(false)
-    }
+      .then(() => setSubmited(true))
+      .catch(() => setConnection(false))
+      .finally(() => setPending(false))
   }
 
   useEffect(() => {
@@ -89,11 +108,24 @@ const CreatePartyPage: React.FC<any> = () => {
       .then((user: any) => {
         setUser(user)
       })
+      .catch(() => setConnection(false))
       .finally(() => setPending(false))
   }, [currentUserId])
 
+  useEffect(() => {
+    const timeOutId = setTimeout(
+      () => setErrorText(inputDataWarning(party)),
+      100,
+    )
+    return () => clearTimeout(timeOutId)
+  }, [user, party])
+
   if (pending) {
     return <PagePreloader />
+  }
+
+  if (!connection) {
+    return <InternetConnectionProblem />
   }
 
   if (submited) {
@@ -101,7 +133,11 @@ const CreatePartyPage: React.FC<any> = () => {
       <section className={styles.createParty}>
         <h2>Party successfully created!</h2>
         <span>
-          You will find it in the <Link to="/parties/">My parties</Link> tab
+          You will find it in the{' '}
+          <Link to={'/organized_and_participation/' + currentUserId + '/'}>
+            My parties
+          </Link>{' '}
+          tab
         </span>
       </section>
     )
@@ -109,7 +145,7 @@ const CreatePartyPage: React.FC<any> = () => {
 
   return (
     <section className={styles.createParty}>
-      <form className={styles.addUserDataForm} onSubmit={handleSubmit}>
+      <form className={styles.addUserDataForm}>
         <div className={styles.formGroup}>
           <span>
             Name<span className={styles.redText}>*</span>:
@@ -133,8 +169,8 @@ const CreatePartyPage: React.FC<any> = () => {
               setParty({
                 ...party,
                 ageInterval: [
-                  Number(event.target.value),
-                  party.ageInterval ? party.ageInterval[1] : 100,
+                  event.target.value,
+                  party.ageInterval ? party.ageInterval[1] : '100',
                 ],
               })
             }
@@ -143,16 +179,14 @@ const CreatePartyPage: React.FC<any> = () => {
             className={styles.inputText}
             min="0"
             max="100"
+            value={party.ageInterval[0]}
           />
 
           <input
             onChange={(event) =>
               setParty({
                 ...party,
-                ageInterval: [
-                  party.ageInterval ? party.ageInterval[0] : 0,
-                  Number(event.target.value),
-                ],
+                ageInterval: [party.ageInterval[0], event.target.value],
               })
             }
             type="number"
@@ -160,6 +194,7 @@ const CreatePartyPage: React.FC<any> = () => {
             className={styles.inputText}
             min="0"
             max="100"
+            value={party.ageInterval[1]}
           />
         </div>
 
@@ -172,10 +207,8 @@ const CreatePartyPage: React.FC<any> = () => {
               setParty({
                 ...party,
                 guestsNumberInterval: [
-                  Number(event.target.value),
-                  party.guestsNumberInterval
-                    ? party.guestsNumberInterval[1]
-                    : 100,
+                  event.target.value,
+                  party.guestsNumberInterval,
                 ],
               })
             }
@@ -184,6 +217,7 @@ const CreatePartyPage: React.FC<any> = () => {
             className={styles.inputText}
             min="1"
             max="100"
+            value={party.guestsNumberInterval[0]}
           />
 
           <input
@@ -191,9 +225,7 @@ const CreatePartyPage: React.FC<any> = () => {
               setParty({
                 ...party,
                 guestsNumberInterval: [
-                  party.guestsNumberInterval
-                    ? party.guestsNumberInterval[0]
-                    : 1,
+                  party.guestsNumberInterval[0],
                   Number(event.target.value),
                 ],
               })
@@ -203,6 +235,7 @@ const CreatePartyPage: React.FC<any> = () => {
             className={styles.inputText}
             min="1"
             max="100"
+            value={party.guestsNumberInterval[1]}
           />
         </div>
 
@@ -216,6 +249,7 @@ const CreatePartyPage: React.FC<any> = () => {
               required
               className={styles.inputText}
               type="text"
+              value={party.meetingPoint}
             />
           </span>
         </div>
@@ -230,6 +264,7 @@ const CreatePartyPage: React.FC<any> = () => {
             }
             required
             className={styles.descriptionArea}
+            value={party.description}
           />
         </div>
 
@@ -247,6 +282,7 @@ const CreatePartyPage: React.FC<any> = () => {
             min={getDateNow()}
             max="2025-12-31"
             className={styles.chooseDate}
+            value={party.meetingTime}
           ></input>
         </div>
 
@@ -260,10 +296,14 @@ const CreatePartyPage: React.FC<any> = () => {
           />
         </div>
 
-        <p className={styles.redText}>{submitErrorText}</p>
+        <p className={styles.redText}>{errorText}</p>
 
         <div className={styles.formGroup}>
-          <button className={styles.submitBtn} type="submit">
+          <button
+            disabled={errorText !== ''}
+            onClick={handleSubmit}
+            className={styles.submitBtn}
+          >
             Save
           </button>
         </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import firebaseApp from './firebaseApp'
-import Preloader from './components/Preloader/Preloader'
+import PagePreloader from './components/PagePreloader/PagePreloader'
 
 export const AuthContext = React.createContext<any>([[], () => null])
 
@@ -18,7 +18,7 @@ export const AuthProvider: React.FC<any> = ({ children }) => {
   }, []) // вызываем каждый раз, когда в firebase меняется статус user
 
   return pending ? (
-    <Preloader />
+    <PagePreloader />
   ) : (
     <AuthContext.Provider
       value={{

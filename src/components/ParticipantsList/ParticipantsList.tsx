@@ -3,8 +3,6 @@ import styles from './ParticipantsList.module.css'
 import crownImageSRC from '../../images/crown.png'
 import DetailedParticipantsList from '../DetailedParticipantsList/DetailedParticipantsList'
 import ImgLink from '../ImgLink/ImgLink'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const ParticipantsList: React.FC<any> = ({
   participants,
@@ -63,13 +61,8 @@ const ParticipantsList: React.FC<any> = ({
         <button
           className={styles.closeListBtn}
           onClick={() => setShowDetailedList(false)}
-        >
-          <FontAwesomeIcon
-            size="3x"
-            className={styles.iconFontAwesome}
-            icon={faTimes}
-          />
-        </button>
+        />
+
         {doNotDisplayLinks ? null : (
           <DetailedParticipantsList participants={participants} />
         )}

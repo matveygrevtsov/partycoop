@@ -1,8 +1,7 @@
 .detailedParticipantsList {
   list-style: none;
   padding-left: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: 15px;
 }
 
 .userLabelDetailed {
@@ -41,4 +40,16 @@
   .userDetailedDescription {
     font-size: 14px;
   }
+}
+
+.detailedParticipantsListHeader {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  height: 60px;
+  padding: 15px;
+  box-sizing: border-box;
+  line-height: 30px;
+  background-color: #e5e9ec;
 }

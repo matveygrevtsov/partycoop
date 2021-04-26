@@ -28,14 +28,23 @@
 
 .removeImg:hover {
   opacity: 1;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 26.43%,
+    rgba(0, 0, 0, 0.8) 72.41%
+  );
 }
 
-.removeImg .iconFontAwesome {
-  color: red;
+.removeImgBtn {
   position: absolute;
-  left: calc(50% - 28px);
-  top: 15px;
+  top: 5px;
+  right: 5px;
   cursor: pointer;
+  height: 35px;
+  width: 35px;
+  background-image: url(../../images/cross.svg);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 .errorMessage {

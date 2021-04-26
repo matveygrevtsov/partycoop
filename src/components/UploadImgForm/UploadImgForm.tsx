@@ -3,8 +3,6 @@ import firebaseApp from '../../firebaseApp'
 import styles from './UploadImgForm.module.css'
 import noImageSelected from '../../images/noImageSelected.png'
 import preloader from '../../images/preloader.gif'
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import InternetConnectionProblem from '../InternetConnectionProblem/InternetConnectionProblem'
 
 const storage = firebaseApp.storage()
@@ -90,12 +88,7 @@ const UploadImgForm: React.FC<any> = ({
           style={{ display: previewSrc ? 'block' : 'none' }}
           className={styles.removeImg}
         >
-          <FontAwesomeIcon
-            className={styles.iconFontAwesome}
-            icon={faTrashAlt}
-            size="4x"
-            onClick={onFileRemove}
-          />
+          <div className={styles.removeImgBtn} onClick={onFileRemove} />
         </div>
         {imagePreview()}
       </div>

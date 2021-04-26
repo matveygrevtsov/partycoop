@@ -6,7 +6,7 @@ import ImgLink from '../ImgLink/ImgLink'
 const DetailedParticipantsList: React.FC<any> = ({ participants }) => {
   return (
     <>
-      <h2>Participants ({participants.length})</h2>
+      <div className={styles.detailedParticipantsListHeader}>Participants ({participants.length})</div>
       <ul className={styles.detailedParticipantsList}>
         {participants.map((participant: any, index: number) => (
           <li

@@ -18,6 +18,7 @@ const EditMyInfoForm: React.FC<any> = () => {
   const [age, setAge] = useState('')
   const [aboutMe, setAboutMe] = useState('')
   const [imageName, setImageName] = useState('')
+  const [submitPending, setSubmitPending] = useState(false)
 
   const inputDataWarning = (
     fullName: string,
@@ -29,8 +30,11 @@ const EditMyInfoForm: React.FC<any> = () => {
     if (!fullName.trim()) {
       return 'Empty Fullname'
     }
-    if (!age.trim()) {
+    if (!age) {
       return 'Empty age'
+    }
+    if (age[0] === age[1] && age[1] === '0') {
+      return 'Wrong age'
     }
     if (!aboutMe.trim()) {
       return 'Empty about me info'
@@ -59,7 +63,7 @@ const EditMyInfoForm: React.FC<any> = () => {
       return
     }
 
-    setPending(true)
+    setSubmitPending(true)
     updateData('users', currentUserId, {
       fullName: fullName.trim(),
       aboutMe: aboutMe.trim(),
@@ -68,7 +72,7 @@ const EditMyInfoForm: React.FC<any> = () => {
     })
       .then(() => setSubmitMessage('Successfully saved!'))
       .catch(() => setConnection(false))
-      .finally(() => setPending(false))
+      .finally(() => setSubmitPending(false))
   }
 
   useEffect(() => {
@@ -135,7 +139,6 @@ const EditMyInfoForm: React.FC<any> = () => {
             type="number"
             required
             className={styles.inputText}
-            min="0"
             name="age"
           />
         </div>
@@ -164,12 +167,12 @@ const EditMyInfoForm: React.FC<any> = () => {
       </div>
       <div className={styles.formCol}>
         <button
-          disabled={submitMessage !== ''}
+          disabled={submitMessage !== '' || submitPending}
           className={styles.submitBtn}
           type="submit"
           onClick={handleSubmit}
         >
-          Save changes
+          {submitPending ? 'Loading ...' : 'Save changes'}
         </button>
         <p
           className={

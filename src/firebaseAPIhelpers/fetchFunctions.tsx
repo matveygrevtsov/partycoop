@@ -65,6 +65,9 @@ export async function fetchUser(id: string) {
 }
 
 export async function fetchUsers(ids: string[]) {
+  if (!ids) {
+    return {}
+  }
   return rejectOnTimeout(
     Promise.all(ids.map((id: string) => fetchUser(id))).then((users: any) => {
       let res: any = {}

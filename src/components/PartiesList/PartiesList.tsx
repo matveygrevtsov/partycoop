@@ -6,7 +6,11 @@ const PartiesList: React.FC<any> = ({ partiesIDs, setConnection }) => {
   return (
     <div className={styles.resultsGrid}>
       {partiesIDs.map((id: string) => (
-        <PartyCard setConnection={setConnection} key={id} partyId={id} />
+        <PartyCard
+          setConnection={setConnection}
+          key={String(new Date().getTime()) + id}
+          partyId={id}
+        />
       ))}
     </div>
   )

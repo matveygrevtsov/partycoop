@@ -21,11 +21,22 @@ const SignUp: React.FC<any> = ({ history }) => {
   })
 
   const inputDataWarning = (user: any) => {
+    if (
+      !user.email &&
+      user.passwordLength < 1 &&
+      !user.fullName &&
+      !user.age &&
+      !user.aboutMe
+    ) {
+      return ' '
+    }
+
     if (!user.email) {
       return 'Empty email'
     }
 
-    if (!user.email.includes('@')) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    if (!re.test(user.email.toLowerCase())) {
       return 'Please enter a valid email'
     }
 
@@ -37,15 +48,30 @@ const SignUp: React.FC<any> = ({ history }) => {
       return 'Empty Fullname'
     }
 
+    if (user.fullName.trim().split(' ').length < 2) {
+      return 'Fullname must include at least two words'
+    }
+
+    if (!/^[a-zA-Z ]+$/.test(user.fullName.trim())) {
+      return 'Please enter a valid fullname'
+    }
+
+    if (user.fullName.trim().length > 30) {
+      return 'Full name must not exceed 30 characters'
+    }
+
     if (/\d/g.test(user.fullName)) {
       return 'Numbers are not allowed in the Fullname'
     }
 
     if (!user.age) {
-      return 'Empty age'
+      return 'Please enter your age'
     }
 
-    if (Number(user.age) < 0) {
+    if (
+      Number(user.age) < 0 ||
+      (user.age[0] === user.age[1] && user.age[1] === '0')
+    ) {
       return 'Wrong age'
     }
 
@@ -76,6 +102,7 @@ const SignUp: React.FC<any> = ({ history }) => {
         age: age.value,
         aboutMe: aboutMe.value,
       })
+
       if (warning !== '') {
         setErrorText(warning)
         return
@@ -115,7 +142,6 @@ const SignUp: React.FC<any> = ({ history }) => {
       <form className={styles.signUpForm} onSubmit={handleSignUp}>
         <input
           autoComplete="off"
-          required
           className={styles.inputText}
           name="email"
           type="email"
@@ -126,7 +152,6 @@ const SignUp: React.FC<any> = ({ history }) => {
 
         <input
           autoComplete="off"
-          required
           className={styles.inputText}
           name="password"
           type="password"
@@ -138,7 +163,6 @@ const SignUp: React.FC<any> = ({ history }) => {
 
         <input
           autoComplete="off"
-          required
           type="text"
           className={styles.inputText}
           name="fullName"
@@ -151,13 +175,10 @@ const SignUp: React.FC<any> = ({ history }) => {
 
         <input
           autoComplete="off"
-          required
           type="number"
           className={styles.inputText}
           name="age"
           placeholder="Age"
-          min="0"
-          max="100"
           value={user.age}
           onChange={(event) => setUser({ ...user, age: event.target.value })}
         />
@@ -166,7 +187,6 @@ const SignUp: React.FC<any> = ({ history }) => {
           autoComplete="off"
           name="aboutMe"
           placeholder="Write a few words about yourself ..."
-          required
           className={styles.aboutMeArea}
           value={user.aboutMe}
           onChange={(event) =>

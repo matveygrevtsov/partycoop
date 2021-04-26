@@ -21,7 +21,6 @@ const App: React.FC<any> = () => {
       <div>
         <Router>
           <Switch>
-            <Route exact path="/welcome" component={Welcome} />
             <Route exact path="/signin" component={SignIn} />
             <Route exact path="/signup" component={SignUp} />
 
@@ -40,6 +39,9 @@ const App: React.FC<any> = () => {
               component={CreatePartyPage}
             />
             <PrivateRoute exact path="/settings" component={Home} />
+
+            <Route exact path="/" component={Welcome} />
+
             <Route component={PageNotFound} />
           </Switch>
         </Router>

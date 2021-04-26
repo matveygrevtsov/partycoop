@@ -22,7 +22,7 @@
 }
 
 .detailedListItem {
-  height: 50px;
+  min-height: 50px;
   margin-top: 7px;
   position: relative;
 }
@@ -35,4 +35,10 @@
   left: 35px;
   z-index: 9;
   display: block;
+}
+
+@media (max-width: 500px) {
+  .userDetailedDescription {
+    font-size: 14px;
+  }
 }

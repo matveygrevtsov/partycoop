@@ -9,11 +9,6 @@ import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 
-function getDateNow() {
-  const date = new Date()
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
-}
-
 function isInvalidInputDate(inputDate: string) {
   let values = inputDate.split('-').map((value: string) => Number(value))
   const date1 = new Date(values[0], values[1] - 1, values[2], 11, 59, 59, 999)
@@ -34,9 +29,9 @@ const CreatePartyPage: React.FC<any> = () => {
     imageName: '',
     ageInterval: ['', ''],
     guestsNumberInterval: ['', ''],
-    description: '',
     name: '',
     meetingPoint: '',
+    description: '',
     meetingTime: '',
   })
   const [submited, setSubmited] = useState(false)
@@ -45,14 +40,55 @@ const CreatePartyPage: React.FC<any> = () => {
   const newPartyId = String(new Date().getTime())
 
   const inputDataWarning = (party: any) => {
-    if (!party.name.trim()) {
+    if (
+      !party.name &&
+      !party.ageInterval[0] &&
+      !party.ageInterval[1] &&
+      !party.guestsNumberInterval[0] &&
+      !party.guestsNumberInterval[1] &&
+      !party.name &&
+      !party.meetingPoint &&
+      !party.description &&
+      !party.meetingTime
+    ) {
       return ' '
     }
+
+    if (!party.name.trim()) {
+      return 'Empty name'
+    }
+
+    if (party.name.trim().length > 30) {
+      return 'Party name must not exceed 30 characters'
+    }
+
+    if (!party.ageInterval[0] || !party.ageInterval[1]) {
+      return 'Empty age interval'
+    }
+
+    if (
+      party.ageInterval[0][0] === party.ageInterval[0][1] &&
+      party.ageInterval[0][1] === '0'
+    ) {
+      return 'Wrong age interval'
+    }
+
+    if (
+      party.ageInterval[1][0] === party.ageInterval[1][1] &&
+      party.ageInterval[1][1] === '0'
+    ) {
+      return 'Wrong age interval'
+    }
+
     const age1 = Number(party.ageInterval[0])
     const age2 = Number(party.ageInterval[1])
 
     if (age1 < 0 || age1 > age2) {
       return 'Wrong age interval!'
+    }
+
+    if (!party.guestsNumberInterval[0] || !party.guestsNumberInterval[1]) {
+      return 'Empty guests number interval!'
     }
 
     const guestNumber1 = Number(party.guestsNumberInterval[0])
@@ -66,8 +102,16 @@ const CreatePartyPage: React.FC<any> = () => {
       return 'There must be at least one guest at the party!'
     }
 
+    if (guestNumber2 > 100) {
+      return 'The number of guests must not exceed 100'
+    }
+
     if (!party.meetingPoint.trim()) {
       return 'Empty meeting point!'
+    }
+
+    if (!party.meetingTime) {
+      return 'Please schedule a meeting time.'
     }
 
     if (isInvalidInputDate(party.meetingTime)) {
@@ -77,6 +121,7 @@ const CreatePartyPage: React.FC<any> = () => {
     if (!party.description.trim()) {
       return 'Empty description!'
     }
+
     return ''
   }
 
@@ -153,7 +198,6 @@ const CreatePartyPage: React.FC<any> = () => {
               onChange={(event) =>
                 setParty({ ...party, name: event.target.value })
               }
-              required
               className={styles.inputText}
               type="text"
             />
@@ -175,10 +219,7 @@ const CreatePartyPage: React.FC<any> = () => {
               })
             }
             type="number"
-            required
             className={styles.inputText}
-            min="0"
-            max="100"
             value={party.ageInterval[0]}
           />
 
@@ -190,10 +231,7 @@ const CreatePartyPage: React.FC<any> = () => {
               })
             }
             type="number"
-            required
             className={styles.inputText}
-            min="0"
-            max="100"
             value={party.ageInterval[1]}
           />
         </div>
@@ -213,7 +251,6 @@ const CreatePartyPage: React.FC<any> = () => {
               })
             }
             type="number"
-            required
             className={styles.inputText}
             min="1"
             max="100"
@@ -231,7 +268,6 @@ const CreatePartyPage: React.FC<any> = () => {
               })
             }
             type="number"
-            required
             className={styles.inputText}
             min="1"
             max="100"
@@ -246,7 +282,6 @@ const CreatePartyPage: React.FC<any> = () => {
               onChange={(event) =>
                 setParty({ ...party, meetingPoint: event.target.value })
               }
-              required
               className={styles.inputText}
               type="text"
               value={party.meetingPoint}
@@ -262,7 +297,6 @@ const CreatePartyPage: React.FC<any> = () => {
             onChange={(event) =>
               setParty({ ...party, description: event.target.value })
             }
-            required
             className={styles.descriptionArea}
             value={party.description}
           />
@@ -273,14 +307,11 @@ const CreatePartyPage: React.FC<any> = () => {
             Meeting time<span className={styles.redText}>*</span>:
           </span>
           <input
-            required
             onChange={(event) =>
               setParty({ ...party, meetingTime: event.target.value })
             }
             type="date"
             name="trip-start"
-            min={getDateNow()}
-            max="2025-12-31"
             className={styles.chooseDate}
             value={party.meetingTime}
           ></input>

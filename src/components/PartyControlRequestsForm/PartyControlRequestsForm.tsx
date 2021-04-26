@@ -40,7 +40,7 @@ const PartyControlRequestsForm: React.FC<any> = ({
       .finally(() => setPending(false))
   }
 
-  const handleReject = async (event: any) => {
+  const handleReject = (event: any) => {
     setPending(true)
     const rejectedUserId = event.target.id
 
@@ -55,7 +55,7 @@ const PartyControlRequestsForm: React.FC<any> = ({
       updateData('users', rejectedUserId, {
         rejectedRequests: [
           party.id,
-          ...(waitingRequests[rejectedUserId].rejectedRequests || []),
+          ...waitingRequests[rejectedUserId].rejectedRequests,
         ],
         waitingRequests: waitingRequests[rejectedUserId].waitingRequests.filter(
           (id: string) => id !== party.id,
@@ -68,56 +68,62 @@ const PartyControlRequestsForm: React.FC<any> = ({
   }
 
   return (
-    <>
+    <div className={styles.partyControlRequestsFormContainer}>
       <h2>Requests list</h2>
       <h3>Waiting ({Object.keys(waitingRequests).length})</h3>
-      <ul className={styles.requestsList}>
+      <ul className={styles.waitingRequestsList}>
         {Object.keys(waitingRequests).map((id: any) => {
           const user = waitingRequests[id]
           return (
-            <li key={id}>
+            <li key={'AcceptOrReject' + id}>
               <ImgLink
                 to={'/user/' + id}
                 imageName={user.imageName}
                 className={styles.requestIcon}
               />
-              <button
-                disabled={pending}
-                className={styles.acceptRequestsBtn}
-                id={id}
-                onClick={handleAccept}
-              >
-                Accept
-              </button>
-              <button
-                disabled={pending}
-                className={styles.rejectedRequestsBtn}
-                id={id}
-                onClick={handleReject}
-              >
-                Reject
-              </button>
+              <div className={styles.selectActionRequest}>
+                <button
+                  disabled={pending}
+                  className={styles.acceptRequestsBtn}
+                  id={id}
+                  onClick={handleAccept}
+                >
+                  Accept
+                </button>
+                <button
+                  disabled={pending}
+                  className={styles.rejectedRequestsBtn}
+                  id={id}
+                  onClick={handleReject}
+                >
+                  Reject
+                </button>
+                <br />
+                <span>{user.fullName}</span>
+              </div>
             </li>
           )
         })}
       </ul>
       <h3>Rejected ({Object.keys(rejectedRequests).length})</h3>
 
-      <ul className={styles.requestsList}>
+      <ul className={styles.rejectedRequests}>
         {Object.keys(rejectedRequests).map((id: string) => {
           const user = rejectedRequests[id]
           return (
-            <li key={id}>
+            <li>
               <ImgLink
+                key={'rejectedUser' + id}
                 to={'/user/' + id}
                 imageName={user.imageName}
                 className={styles.requestIcon}
               />
+              <div className={styles.selectActionRequest}>{user.fullName}</div>
             </li>
           )
         })}
       </ul>
-    </>
+    </div>
   )
 }
 

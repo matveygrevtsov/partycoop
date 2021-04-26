@@ -18,7 +18,7 @@ const PrivateRoute: React.FC<any> = ({
             <RouteComponent {...routeProps} />
           </>
         ) : (
-          <Redirect to={'/welcome'} />
+          <Redirect to={'/'} />
         )
       }
     />

@@ -9,13 +9,12 @@ const DetailedParticipantsList: React.FC<any> = ({ participants }) => {
       <h2>Participants ({participants.length})</h2>
       <ul className={styles.detailedParticipantsList}>
         {participants.map((participant: any, index: number) => (
-          <li key={participant.id} className={styles.detailedListItem}>
+          <li
+            key={'DetailedParticipantsList' + participant.id}
+            className={styles.detailedListItem}
+          >
             {index === 0 ? (
-              <img
-                className={styles.crown}
-                src={crownImageSRC}
-                alt="guest"
-              />
+              <img className={styles.crown} src={crownImageSRC} alt="guest" />
             ) : null}
             <ImgLink
               to={'/user/' + participant.id}

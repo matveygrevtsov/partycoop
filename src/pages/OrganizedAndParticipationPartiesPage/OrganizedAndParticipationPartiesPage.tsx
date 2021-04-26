@@ -42,15 +42,21 @@ const OrganizedAndParticipationPartiesPage: React.FC<any> = ({ match }) => {
 
   return (
     <section className={styles.organizedAndParticipationPartiesSection}>
-      <h2>
-        Parties organized by {user.fullName} ({user.organizedParties.length})
+      <h2 className={styles.counterHeading}>
+        {currentUserId === userId
+          ? 'Organized parties '
+          : 'Parties organized by ' + user.fullName + ' '}
+        ({user.organizedParties.length})
       </h2>
       <PartiesList
         setConnection={setConnection}
         partiesIDs={user.organizedParties}
       />
-      <h2>
-        Parties that include {user.fullName} ({user.participation.length})
+      <h2 className={styles.counterHeading}>
+        {currentUserId === userId
+          ? 'Participation '
+          : 'Parties that include ' + user.fullName + ' '}
+        ({user.participation.length})
       </h2>
       <PartiesList
         setConnection={setConnection}

@@ -40,7 +40,10 @@ const PartyCard: React.FC<any> = ({ partyId, setConnection }) => {
     >
       <h2 className={styles.partyName}>{party.name}</h2>
       <div className={styles.partyInfo}>
-        <ParticipantsList participants={participants} />
+        <ParticipantsList
+          doNotDisplayLinks={true}
+          participants={participants}
+        />
       </div>
     </ImgLink>
   )

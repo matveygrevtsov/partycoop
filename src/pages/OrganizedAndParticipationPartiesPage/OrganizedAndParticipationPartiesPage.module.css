@@ -6,3 +6,9 @@
   margin: auto;
   width: 100%;
 }
+
+@media (max-width: 500px) {
+  .organizedAndParticipationPartiesSection .counterHeading {
+    font-size: 5vw;
+  }
+}

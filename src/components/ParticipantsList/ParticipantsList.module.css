@@ -25,23 +25,6 @@
   position: relative;
 }
 
-@media (max-width: 500px) {
-  .partyParticipants li,
-  .partyParticipant {
-    display: inline-block;
-    height: 40px;
-    width: 40px;
-    line-height: 40px;
-  }
-
-  .partyParticipants {
-    display: block;
-    margin: auto;
-    float: none;
-    margin-top: 16px;
-  }
-}
-
 .partyParticipants .crown {
   height: 20px;
   width: 20px;
@@ -91,12 +74,6 @@
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
-@media (max-width: 400px) {
-  .detailedListWindow {
-    left: 15px;
-  }
-}
-
 .closeListBtn {
   position: absolute;
   top: 35px;
@@ -113,4 +90,31 @@
 .iconFontAwesome {
   height: 35px;
   width: 35px;
+}
+
+@media (max-width: 500px) {
+  .remainingGuestsBtn {
+    height: 40px;
+    width: 40px;
+  }
+  .partyParticipants li,
+  .partyParticipant {
+    display: inline-block;
+    height: 40px;
+    width: 40px;
+    line-height: 40px;
+  }
+
+  .partyParticipants {
+    display: block;
+    margin: auto;
+    float: none;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .detailedListWindow {
+    left: 15px;
+  }
 }

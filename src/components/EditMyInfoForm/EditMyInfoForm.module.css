@@ -5,6 +5,8 @@
   outline: none;
   height: 30px;
   font-size: 20px;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .formGroup {

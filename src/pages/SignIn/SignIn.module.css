@@ -46,9 +46,14 @@
   width: 100%;
   height: 50px;
   cursor: pointer;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 0 0 4px #e1e1e1, 0 0 1px rgb(0 0 0 / 0%);
+  background-color: white;
+}
+
+.submitBtn:disabled {
+  cursor: not-allowed;
 }
 
 .errorText {
-  color: #DC143C;
+  color: #dc143c;
 }

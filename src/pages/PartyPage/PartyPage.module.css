@@ -1,4 +1,4 @@
-.partyCard {
+.partyContainer {
   max-width: 900px;
   width: 100%;
   box-sizing: border-box;
@@ -6,6 +6,7 @@
   position: relative;
   margin: auto;
   margin-top: 15px;
+  margin-bottom: 15px;
   background-color: white;
   height: calc(100% - 30px);
   overflow-y: auto;

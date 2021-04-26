@@ -8,36 +8,36 @@ import { Link } from 'react-router-dom'
 
 const SignIn: React.FC<any> = ({ history }) => {
   const { currentUser } = useContext(AuthContext)
+  const [email, setEmail]: any = useState('')
+  const [passwordLength, setPasswordLength]: any = useState(0)
   const [errorText, setErrorText] = useState('')
-  const [email, setEmail] = useState('')
-  const [passwordLength, setPasswordLength] = useState(0)
-  const [correctInputs, setCorrectInputs] = useState(false)
 
-  const checkInputData = (email: string, passwordLength: number) => {
-    setCorrectInputs(false)
-    setErrorText('')
-
+  const inputDataWarning = (email: string, passwordLength: number) => {
+    if (!email && passwordLength < 1) {
+      return ' '
+    }
     if (!email) {
-      return
+      return 'Empty email'
     }
-
-    if (!email.includes('@')) {
-      setErrorText('Please enter a valid email')
-      return
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    if (!re.test(email.toLowerCase())) {
+      return 'Please enter a valid email'
     }
-
     if (passwordLength < 6) {
-      return
+      return 'Your password must contain at least 6 characters'
     }
-
-    setCorrectInputs(true)
-    setErrorText('')
+    return ''
   }
 
   const handleSignIn = useCallback(
     async (event) => {
       event.preventDefault()
       const { email, password } = event.target.elements
+      const warning = inputDataWarning(email.value, password.value.length)
+      if (warning !== '') {
+        setErrorText(warning)
+        return
+      }
       try {
         await firebaseApp
           .auth()
@@ -52,7 +52,7 @@ const SignIn: React.FC<any> = ({ history }) => {
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => checkInputData(email, passwordLength),
+      () => setErrorText(inputDataWarning(email, passwordLength)),
       100,
     )
     return () => clearTimeout(timeOutId)
@@ -68,7 +68,6 @@ const SignIn: React.FC<any> = ({ history }) => {
       <form className={styles.signInForm} onSubmit={handleSignIn}>
         <input
           autoComplete="off"
-          required
           className={styles.inputText}
           name="email"
           type="email"
@@ -77,7 +76,6 @@ const SignIn: React.FC<any> = ({ history }) => {
         />
         <input
           autoComplete="off"
-          required
           className={styles.inputText}
           name="password"
           type="password"
@@ -89,7 +87,7 @@ const SignIn: React.FC<any> = ({ history }) => {
         <p className={styles.errorText}>{errorText}</p>
 
         <button
-          disabled={!correctInputs}
+          disabled={errorText !== ''}
           className={styles.submitBtn}
           type="submit"
         >

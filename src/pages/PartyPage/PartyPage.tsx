@@ -34,17 +34,13 @@ const PartyPage: React.FC<any> = ({ match }) => {
   const [connection, setConnection] = useState(true)
 
   const requestsControlActionHandle = (action: any) => {
-    setParty({
-      ...party,
-      waitingRequests: party.waitingRequests.filter(
-        (id: string) => id !== action.userId,
-      ),
-    })
-
     switch (action.type) {
       case 'accept':
         setParty({
           ...party,
+          waitingRequests: party.waitingRequests.filter(
+            (id: string) => id !== action.userId,
+          ),
           guests: [action.userId, ...party.guests],
         })
         setGuests({
@@ -55,6 +51,9 @@ const PartyPage: React.FC<any> = ({ match }) => {
       case 'reject':
         setParty({
           ...party,
+          waitingRequests: party.waitingRequests.filter(
+            (id: string) => id !== action.userId,
+          ),
           rejectedRequests: [action.userId, ...party.rejectedRequests],
         })
         setRejectedRequests({
@@ -71,13 +70,10 @@ const PartyPage: React.FC<any> = ({ match }) => {
   useEffect(() => {
     setPending(true)
     Promise.all([
-      fetchParty(partyId).then(
-        (partyResponse: any) => {
-          setParty(partyResponse)
-          return partyResponse
-        },
-        () => console.log('вечеринка не найдена!'),
-      ),
+      fetchParty(partyId).then((partyResponse: any) => {
+        setParty(partyResponse)
+        return partyResponse
+      }),
       fetchUser(currentUserId).then((userResponse) => {
         setUser(userResponse)
         return userResponse
@@ -114,7 +110,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
   }
 
   return (
-    <section className={styles.partyCard}>
+    <section className={styles.partyContainer}>
       <ImgLink
         to={'/party/' + partyId}
         imageName={party.imageName}

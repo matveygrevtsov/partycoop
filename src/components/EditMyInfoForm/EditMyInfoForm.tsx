@@ -6,70 +6,68 @@ import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 import Preloader from '../Preloader/Preloader'
 import InternetConnectionProblem from '../InternetConnectionProblem/InternetConnectionProblem'
+import { User } from '../../DataTypes'
 
-const EditMyInfoForm: React.FC<any> = () => {
+type InputUserData = {
+  fullName: string
+  age: number
+  aboutMe: string
+  imageName: string
+}
+
+const EditMyInfoForm: React.FC = () => {
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
   const [pending, setPending] = useState(true)
-  const [user, setUser]: any = useState(null)
+  const [submitPending, setSubmitPending] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
   const [submitMessage, setSubmitMessage] = useState('')
   const [connection, setConnection] = useState(true)
-  const [fullName, setFullName] = useState('')
-  const [age, setAge] = useState('')
-  const [aboutMe, setAboutMe] = useState('')
-  const [imageName, setImageName] = useState('')
-  const [submitPending, setSubmitPending] = useState(false)
+  const [newUserData, setNewUserData] = useState<InputUserData | null>(null)
 
   const inputDataWarning = (
-    fullName: string,
-    age: string,
-    aboutMe: string,
-    imageName: string,
-    oldInfo: any,
+    userData: InputUserData,
+    currentUser: User,
   ) => {
-    if (!fullName.trim()) {
+    const trimInputFullName = userData.fullName.trim()
+    const trimInputAboutMe = userData.aboutMe.trim()
+
+    if (!trimInputFullName) {
       return 'Empty Fullname'
     }
-    if (!age) {
-      return 'Empty age'
+    if (/\d/g.test(trimInputFullName)) {
+      return 'Numbers are not allowed in the Fullname'
     }
-    if (age[0] === age[1] && age[1] === '0') {
+    if (userData.age < 0) {
       return 'Wrong age'
     }
-    if (!aboutMe.trim()) {
+    if (!trimInputAboutMe) {
       return 'Empty about me info'
     }
     if (
-      oldInfo.fullName === fullName.trim() &&
-      oldInfo.age === Number(age) &&
-      oldInfo.aboutMe === aboutMe.trim() &&
-      oldInfo.imageName === imageName
+      currentUser.fullName === trimInputFullName &&
+      currentUser.age === userData.age &&
+      currentUser.aboutMe === trimInputAboutMe &&
+      currentUser.imageName === userData.imageName
     ) {
       return ' '
     }
-    if (/\d/g.test(fullName)) {
-      return 'Numbers are not allowed in the Fullname'
-    }
-    if (Number(age) < 0) {
-      return 'Wrong age'
-    }
+
     return ''
   }
 
   const handleSubmit = () => {
-    const warning = inputDataWarning(fullName, age, aboutMe, imageName, user)
+    if(!newUserData || !user) {
+      return
+    }
+    const warning: string = inputDataWarning(newUserData, user)
     if (warning !== '') {
       setSubmitMessage(warning)
       return
     }
 
     setSubmitPending(true)
-    updateData('users', currentUserId, {
-      fullName: fullName.trim(),
-      aboutMe: aboutMe.trim(),
-      age: Number(age),
-      imageName: imageName,
-    })
+    updateData('users', currentUserId, newUserData)
       .then(() => setSubmitMessage('Successfully saved!'))
       .catch(() => setConnection(false))
       .finally(() => setSubmitPending(false))
@@ -78,29 +76,28 @@ const EditMyInfoForm: React.FC<any> = () => {
   useEffect(() => {
     setPending(true)
     fetchUser(currentUserId)
-      .then((user: any) => {
+      .then((user: User) => {
         setUser(user)
-        setFullName(user.fullName)
-        setAge(String(user.age))
-        setAboutMe(user.aboutMe)
-        setImageName(user.imageName)
+        setNewUserData({
+          fullName: user.fullName,
+          age: user.age,
+          aboutMe: user.aboutMe,
+          imageName: user.imageName,
+        })
       })
       .catch(() => setConnection(false))
       .finally(() => setPending(false))
   }, [currentUserId])
 
   useEffect(() => {
-    if (user) {
+    if (user && newUserData) {
       const timeOutId = setTimeout(
-        () =>
-          setSubmitMessage(
-            inputDataWarning(fullName, age, aboutMe, imageName, user),
-          ),
+        () => setSubmitMessage(inputDataWarning(newUserData, user)),
         100,
       )
       return () => clearTimeout(timeOutId)
     }
-  }, [user, fullName, age, aboutMe, imageName])
+  }, [user, newUserData])
 
   if (pending) {
     return <Preloader />
@@ -108,6 +105,10 @@ const EditMyInfoForm: React.FC<any> = () => {
 
   if (!connection) {
     return <InternetConnectionProblem />
+  }
+
+  if (!newUserData || !user) {
+    return null
   }
 
   return (
@@ -119,8 +120,15 @@ const EditMyInfoForm: React.FC<any> = () => {
           </span>
           <input
             autoComplete="off"
-            onChange={(event) => setFullName(event.target.value)}
-            value={fullName}
+            onChange={(event) =>
+              setNewUserData({
+                fullName: event.target.value,
+                age: newUserData?.age,
+                aboutMe: newUserData?.aboutMe,
+                imageName: newUserData?.imageName,
+              })
+            }
+            value={newUserData.fullName}
             required
             className={styles.inputText}
             type="text"
@@ -134,8 +142,15 @@ const EditMyInfoForm: React.FC<any> = () => {
           </span>
           <input
             autoComplete="off"
-            onChange={(event) => setAge(event.target.value)}
-            value={age}
+            onChange={(event) =>
+              setNewUserData({
+                fullName: newUserData.fullName,
+                age: Number(event.target.value),
+                aboutMe: newUserData?.aboutMe,
+                imageName: newUserData?.imageName,
+              })
+            }
+            value={String(newUserData.age)}
             type="number"
             required
             className={styles.inputText}
@@ -149,8 +164,15 @@ const EditMyInfoForm: React.FC<any> = () => {
           </span>
           <textarea
             autoComplete="off"
-            onChange={(event) => setAboutMe(event.target.value)}
-            value={aboutMe}
+            onChange={(event) =>
+              setNewUserData({
+                fullName: newUserData.fullName,
+                age: newUserData.age,
+                aboutMe: event.target.value,
+                imageName: newUserData?.imageName,
+              })
+            }
+            value={newUserData.aboutMe}
             required
             className={styles.aboutMeArea}
             name="aboutMe"
@@ -161,8 +183,15 @@ const EditMyInfoForm: React.FC<any> = () => {
         <UploadImgForm
           folder="users"
           id={currentUserId}
-          startImageSrc={imageName}
-          setNewImage={(src: string) => setImageName(src)}
+          startImageSrc={newUserData.imageName}
+          setNewImage={(src: string) =>
+            setNewUserData({
+              fullName: newUserData.fullName,
+              age: newUserData.age,
+              aboutMe: newUserData.aboutMe,
+              imageName: src,
+            })
+          }
         />
       </div>
       <div className={styles.formCol}>

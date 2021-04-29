@@ -1,8 +1,12 @@
 import firebaseApp from '../firebaseApp'
+import { User, Party, UsersObject } from '../DataTypes'
 
-const maxExpectation = 5000
+const maxExpectation: number = 5000
 
-export const rejectOnTimeout = async (promise: any, ms: number) =>
+export const rejectOnTimeout = async (
+  promise: Promise<any>,
+  ms: number,
+): Promise<any> =>
   new Promise((resolve, reject) => {
     promise.then(
       (res: any) => resolve(res),
@@ -13,7 +17,7 @@ export const rejectOnTimeout = async (promise: any, ms: number) =>
     }, ms)
   })
 
-export async function fetchParty(id: string) {
+export async function fetchParty(id: string): Promise<Party> {
   return rejectOnTimeout(
     firebaseApp
       .database()
@@ -40,7 +44,7 @@ export async function fetchParty(id: string) {
   )
 }
 
-export async function fetchUser(id: string) {
+export async function fetchUser(id: string): Promise<User> {
   return rejectOnTimeout(
     firebaseApp
       .database()
@@ -64,21 +68,25 @@ export async function fetchUser(id: string) {
   )
 }
 
-export async function fetchUsers(ids: string[]) {
+export async function fetchUsers(ids: string[]): Promise<UsersObject> {
   if (!ids) {
     return {}
   }
   return rejectOnTimeout(
-    Promise.all(ids.map((id: string) => fetchUser(id))).then((users: any) => {
-      let res: any = {}
-      users.forEach((user: any) => (res[user.id] = user))
-      return res
-    }),
+    Promise.all(ids.map((id: string) => fetchUser(id))).then(
+      (users: User[]) => {
+        let res: UsersObject = {}
+        users.forEach((user: User) => (res[user.id] = user))
+        return res
+      },
+    ),
     maxExpectation,
   )
 }
 
-export async function fetchAllPartiesIdsBesides(unwantedIds: string[]) {
+export async function fetchAllPartiesIdsBesides(
+  unwantedIds: string[],
+): Promise<string[]> {
   return rejectOnTimeout(
     firebaseApp
       .database()

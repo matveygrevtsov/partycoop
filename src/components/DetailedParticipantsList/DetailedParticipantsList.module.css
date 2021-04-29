@@ -36,12 +36,6 @@
   display: block;
 }
 
-@media (max-width: 500px) {
-  .userDetailedDescription {
-    font-size: 14px;
-  }
-}
-
 .detailedParticipantsListHeader {
   position: absolute;
   width: 100%;
@@ -52,4 +46,10 @@
   box-sizing: border-box;
   line-height: 30px;
   background-color: #e5e9ec;
+}
+
+@media (max-width: 500px) {
+  .userDetailedDescription {
+    font-size: 14px;
+  }
 }

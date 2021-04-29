@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './Home.module.css'
 import EditMyInfoForm from '../../components/EditMyInfoForm/EditMyInfoForm'
 
-const Home: React.FC<any> = () => {
+const Home: React.FC = () => {
   return (
     <section className={styles.myAccountSettings}>
       <div className={styles.sectionHead}>

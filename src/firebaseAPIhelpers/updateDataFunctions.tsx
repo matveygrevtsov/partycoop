@@ -1,9 +1,13 @@
 import firebaseApp from '../firebaseApp'
 import { rejectOnTimeout } from './fetchFunctions'
 
-const maxExpectation = 5000
+const maxExpectation: number = 5000
 
-export function updateData(folder: string, id: string, values: any) {
+export function updateData(
+  folder: string,
+  id: string,
+  values: object,
+): Promise<void> {
   return rejectOnTimeout(
     firebaseApp
       .database()

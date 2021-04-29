@@ -17,23 +17,27 @@ import {
 } from '../../firebaseAPIhelpers/fetchFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
+import { Party, User, UsersObject } from '../../DataTypes'
 
 const PartyPage: React.FC<any> = ({ match }) => {
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
   const partyId = match.params.partyId
-  const [user, setUser]: any = useState(null)
-  const [party, setParty]: any = useState(null)
-  const [guests, setGuests]: any = useState({})
-  const [waitingRequests, setWaitingRequests]: any = useState({})
-  const [rejectedRequests, setRejectedRequests]: any = useState({})
-  const [author, setAuthor]: any = useState(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [party, setParty] = useState<Party | null>(null)
+  const [guests, setGuests] = useState<UsersObject>({})
+  const [waitingRequests, setWaitingRequests] = useState<UsersObject>({})
+  const [rejectedRequests, setRejectedRequests] = useState<UsersObject>({})
+  const [author, setAuthor] = useState<User | null>(null)
 
   const [pending, setPending] = useState(true)
 
   const [connection, setConnection] = useState(true)
 
   const requestsControlActionHandle = (action: any) => {
+    if (!party) {
+      return
+    }
     switch (action.type) {
       case 'accept':
         setParty({
@@ -70,7 +74,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
   useEffect(() => {
     setPending(true)
     Promise.all([
-      fetchParty(partyId).then((partyResponse: any) => {
+      fetchParty(partyId).then((partyResponse: Party) => {
         setParty(partyResponse)
         return partyResponse
       }),
@@ -107,6 +111,10 @@ const PartyPage: React.FC<any> = ({ match }) => {
 
   if (!connection) {
     return <InternetConnectionProblem />
+  }
+
+  if (!author || !user) {
+    return null
   }
 
   return (
@@ -181,4 +189,4 @@ const PartyPage: React.FC<any> = ({ match }) => {
   )
 }
 
-export default PartyPage
+export default React.memo(PartyPage)

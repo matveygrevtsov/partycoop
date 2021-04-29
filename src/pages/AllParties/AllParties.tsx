@@ -6,9 +6,10 @@ import { fetchAllPartiesIdsBesides } from '../../firebaseAPIhelpers/fetchFunctio
 import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
+import { User } from '../../DataTypes'
 
-const AllParties: React.FC<any> = () => {
-  const [partiesIds, setPartiesIds]: any = useState([])
+const AllParties: React.FC = () => {
+  const [partiesIds, setPartiesIds] = useState<string[]>([])
   const [pending, setPending] = useState(true)
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
@@ -17,10 +18,10 @@ const AllParties: React.FC<any> = () => {
   useEffect(() => {
     setPending(true)
     fetchUser(currentUserId)
-      .then((userResponse: any) => {
+      .then((userResponse: User) => {
         return fetchAllPartiesIdsBesides(userResponse.organizedParties)
       })
-      .then((ids: any) => {
+      .then((ids: string[]) => {
         setPartiesIds(ids)
       })
       .catch(() => {

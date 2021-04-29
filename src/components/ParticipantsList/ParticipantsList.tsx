@@ -3,16 +3,17 @@ import styles from './ParticipantsList.module.css'
 import crownImageSRC from '../../images/crown.png'
 import DetailedParticipantsList from '../DetailedParticipantsList/DetailedParticipantsList'
 import ImgLink from '../ImgLink/ImgLink'
+import { User } from '../../DataTypes'
 
-const ParticipantsList: React.FC<any> = ({
-  participants,
-  doNotDisplayLinks,
-}) => {
+const ParticipantsList: React.FC<{
+  participants: User[]
+  doNotDisplayLinks?: boolean
+}> = (props) => {
   const [showDetailedList, setShowDetailedList] = useState(false)
   return (
     <>
       <ul className={styles.partyParticipants}>
-        {participants.slice(0, 4).map((participant: any, index: number) => (
+        {props.participants.slice(0, 4).map((participant: User, index: number) => (
           <li key={'ParticipantsList' + participant.id}>
             {index === 0 ? (
               <img
@@ -22,7 +23,7 @@ const ParticipantsList: React.FC<any> = ({
               />
             ) : null}
             <ImgLink
-              doNotShowLink={doNotDisplayLinks}
+              doNotShowLink={props.doNotDisplayLinks}
               to={'/user/' + participant.id}
               imageName={participant.imageName}
               className={styles.partyParticipant}
@@ -30,7 +31,7 @@ const ParticipantsList: React.FC<any> = ({
           </li>
         ))}
 
-        {!doNotDisplayLinks ? (
+        {!props.doNotDisplayLinks ? (
           <li>
             <button
               onClick={() => setShowDetailedList(!showDetailedList)}
@@ -43,13 +44,13 @@ const ParticipantsList: React.FC<any> = ({
           </li>
         ) : null}
 
-        {doNotDisplayLinks && participants.length > 4 ? (
+        {props.doNotDisplayLinks && props.participants.length > 4 ? (
           <li>
             <button
               onClick={() => setShowDetailedList(!showDetailedList)}
               className={styles.remainingGuestsBtn}
             >
-              +{participants.length - 4}
+              +{props.participants.length - 4}
             </button>
           </li>
         ) : null}
@@ -63,12 +64,12 @@ const ParticipantsList: React.FC<any> = ({
           onClick={() => setShowDetailedList(false)}
         />
 
-        {doNotDisplayLinks ? null : (
-          <DetailedParticipantsList participants={participants} />
+        {props.doNotDisplayLinks ? null : (
+          <DetailedParticipantsList participants={props.participants} />
         )}
       </div>
     </>
   )
 }
 
-export default ParticipantsList
+export default React.memo(ParticipantsList)

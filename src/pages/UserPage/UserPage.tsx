@@ -6,11 +6,12 @@ import ImgLink from '../../components/ImgLink/ImgLink'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import { Link } from 'react-router-dom'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
+import { User } from '../../DataTypes'
 
 const UserPage: React.FC<any> = ({ match }) => {
   const userId = match.params.userId
   const [pending, setPending] = useState(true)
-  const [user, setUser]: any = useState(null)
+  const [user, setUser] = useState<User | null>(null)
   const [connection, setConnection] = useState(true)
 
   useEffect(() => {
@@ -18,7 +19,7 @@ const UserPage: React.FC<any> = ({ match }) => {
     setPending(true)
     fetchUser(userId)
       .then(
-        (user: any) => {
+        (user: User) => {
           setUser(user)
         },
         () => setConnection(false),
@@ -74,4 +75,4 @@ const UserPage: React.FC<any> = ({ match }) => {
   )
 }
 
-export default UserPage
+export default React.memo(UserPage)

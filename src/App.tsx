@@ -15,7 +15,7 @@ import OrganizedAndParticipationPartiesPage from './pages/OrganizedAndParticipat
 import PageNotFound from './pages/PageNotFound/PageNotFound'
 import AllParties from './pages/AllParties/AllParties'
 
-const App: React.FC<any> = () => {
+const App: React.FC = () => {
   return (
     <AuthProvider>
       <div>

@@ -11,7 +11,7 @@ import React, { useContext } from 'react'
 import firebase from '../../firebaseApp'
 import { AuthContext } from '../../Auth'
 
-const NavBar: React.FC<any> = () => {
+const NavBar: React.FC = () => {
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
   return (

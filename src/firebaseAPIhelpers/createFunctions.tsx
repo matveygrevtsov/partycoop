@@ -1,9 +1,9 @@
 import firebaseApp from '../firebaseApp'
 import { rejectOnTimeout } from './fetchFunctions'
 
-const maxExpectation = 5000
+const maxExpectation: number = 5000
 
-export function createDocument(folder: string, id: string, data: any) {
+export function createDocument(folder: string, id: string, data: object) {
   return rejectOnTimeout(
     firebaseApp
       .database()

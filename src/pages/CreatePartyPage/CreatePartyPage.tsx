@@ -8,6 +8,18 @@ import { createDocument } from '../../firebaseAPIhelpers/createFunctions'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
+import { User } from '../../DataTypes'
+
+type PartyTemplate = {
+  author: string
+  imageName: string
+  ageInterval: [string, string]
+  guestsNumberInterval: [string, string]
+  name: string
+  meetingPoint: string
+  description: string
+  meetingTime: string
+}
 
 function isInvalidInputDate(inputDate: string) {
   let values = inputDate.split('-').map((value: string) => Number(value))
@@ -19,12 +31,12 @@ function isInvalidInputDate(inputDate: string) {
   return false
 }
 
-const CreatePartyPage: React.FC<any> = () => {
+const CreatePartyPage: React.FC = () => {
   const [connection, setConnection] = useState(true)
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
-  const [user, setUser]: any = useState(null)
-  const [party, setParty]: any = useState({
+  const [user, setUser] = useState<User | null>(null)
+  const [party, setParty] = useState<PartyTemplate>({
     author: currentUserId,
     imageName: '',
     ageInterval: ['', ''],
@@ -39,7 +51,7 @@ const CreatePartyPage: React.FC<any> = () => {
   const [errorText, setErrorText] = useState('')
   const newPartyId = String(new Date().getTime())
 
-  const inputDataWarning = (party: any) => {
+  const inputDataWarning = (party: PartyTemplate) => {
     if (
       !party.name &&
       !party.ageInterval[0] &&
@@ -54,11 +66,13 @@ const CreatePartyPage: React.FC<any> = () => {
       return ' '
     }
 
-    if (!party.name.trim()) {
+    const trimPartyName = party.name.trim()
+
+    if (!trimPartyName) {
       return 'Empty name'
     }
 
-    if (party.name.trim().length > 30) {
+    if (trimPartyName.length > 30) {
       return 'Party name must not exceed 30 characters'
     }
 
@@ -128,6 +142,10 @@ const CreatePartyPage: React.FC<any> = () => {
   const handleSubmit = async (event: any) => {
     event.preventDefault()
 
+    if (!user) {
+      return
+    }
+
     const warning = inputDataWarning(party)
     if (warning !== '') {
       setErrorText(warning)
@@ -137,7 +155,7 @@ const CreatePartyPage: React.FC<any> = () => {
     setPending(true)
 
     createDocument('parties', newPartyId, party)
-      .then((id: any) => {
+      .then((id: string) => {
         return updateData('users', currentUserId, {
           organizedParties: [id, ...user.organizedParties],
         })
@@ -150,7 +168,7 @@ const CreatePartyPage: React.FC<any> = () => {
   useEffect(() => {
     setPending(true)
     fetchUser(currentUserId)
-      .then((user: any) => {
+      .then((user: User) => {
         setUser(user)
       })
       .catch(() => setConnection(false))
@@ -163,7 +181,7 @@ const CreatePartyPage: React.FC<any> = () => {
       100,
     )
     return () => clearTimeout(timeOutId)
-  }, [user, party])
+  }, [party])
 
   if (pending) {
     return <PagePreloader />
@@ -171,6 +189,10 @@ const CreatePartyPage: React.FC<any> = () => {
 
   if (!connection) {
     return <InternetConnectionProblem />
+  }
+
+  if (!user) {
+    return null
   }
 
   if (submited) {
@@ -246,7 +268,7 @@ const CreatePartyPage: React.FC<any> = () => {
                 ...party,
                 guestsNumberInterval: [
                   event.target.value,
-                  party.guestsNumberInterval,
+                  party.guestsNumberInterval[1],
                 ],
               })
             }
@@ -263,7 +285,7 @@ const CreatePartyPage: React.FC<any> = () => {
                 ...party,
                 guestsNumberInterval: [
                   party.guestsNumberInterval[0],
-                  Number(event.target.value),
+                  event.target.value,
                 ],
               })
             }

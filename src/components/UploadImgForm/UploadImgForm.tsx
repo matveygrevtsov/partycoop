@@ -7,13 +7,13 @@ import InternetConnectionProblem from '../InternetConnectionProblem/InternetConn
 
 const storage = firebaseApp.storage()
 
-const UploadImgForm: React.FC<any> = ({
-  setNewImage,
-  startImageSrc,
-  folder,
-  id,
-}) => {
-  const [previewSrc, setPreviewSrc] = useState(startImageSrc || '')
+const UploadImgForm: React.FC<{
+  setNewImage: (src: string) => void
+  startImageSrc?: string
+  folder: string
+  id: string
+}> = (props) => {
+  const [previewSrc, setPreviewSrc] = useState(props.startImageSrc || '')
   const [pending, setPending] = useState(false)
   const [errorText, setErrorText] = useState('')
   const [connection, setConnection] = useState(true)
@@ -33,7 +33,12 @@ const UploadImgForm: React.FC<any> = ({
       const ref = storage
         .ref()
         .child(
-          'images/' + folder + '/' + id + '/' + String(new Date().getTime()),
+          'images/' +
+            props.folder +
+            '/' +
+            props.id +
+            '/' +
+            String(new Date().getTime()),
         )
       await ref.put(file)
       const src: string = await ref.getDownloadURL().then((srcResponse) => {
@@ -41,7 +46,7 @@ const UploadImgForm: React.FC<any> = ({
         return srcResponse
       })
       setPreviewSrc(src)
-      setNewImage(src)
+      props.setNewImage(src)
     } catch {
       event.target.value = null
       setConnection(false)
@@ -52,7 +57,7 @@ const UploadImgForm: React.FC<any> = ({
 
   const onFileRemove = () => {
     setPreviewSrc('')
-    setNewImage('')
+    props.setNewImage('')
     inputFileRef.current.value = null
   }
 

@@ -5,7 +5,7 @@ import styles from './Welcome.module.css'
 import CenterLogo from '../../components/CenterLogo/CenterLogo'
 import Button from '../../components/Button/Button'
 
-const Home: React.FC<any> = () => {
+const Home: React.FC = () => {
   return (
     <section className={styles.welcomeSection}>
       <CenterLogo />

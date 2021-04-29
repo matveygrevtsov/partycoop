@@ -7,12 +7,13 @@ import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import PageNotFound from '../PageNotFound/PageNotFound'
 import { AuthContext } from '../../Auth'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
+import { User } from '../../DataTypes'
 
 const OrganizedAndParticipationPartiesPage: React.FC<any> = ({ match }) => {
   const { currentUser } = useContext(AuthContext)
   const currentUserId = currentUser.uid
   const userId = match.params.userId
-  const [user, setUser]: any = useState(null)
+  const [user, setUser] = useState<User | null>(null)
   const [pending, setPending] = useState(false)
   const [connection, setConnection] = useState(true)
 
@@ -20,7 +21,7 @@ const OrganizedAndParticipationPartiesPage: React.FC<any> = ({ match }) => {
     setPending(true)
     fetchUser(userId)
       .then(
-        (user: any) => {
+        (user: User) => {
           setUser(user)
         },
         () => setConnection(false),
@@ -69,4 +70,4 @@ const OrganizedAndParticipationPartiesPage: React.FC<any> = ({ match }) => {
   )
 }
 
-export default OrganizedAndParticipationPartiesPage
+export default React.memo(OrganizedAndParticipationPartiesPage)

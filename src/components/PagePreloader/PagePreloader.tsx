@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './PagePreloader.module.css'
 
-const PagePreloader: React.FC<any> = () => {
+const PagePreloader: React.FC = () => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.circle} />

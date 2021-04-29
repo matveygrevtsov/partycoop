@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './InternetConnectionProblem.module.css'
 import connectionFail from '../../images/connectionFail.png'
 
-const InternetConnectionProblem: React.FC<any> = () => {
+const InternetConnectionProblem: React.FC = () => {
   return (
     <div className={styles.connectionFail}>
       <img src={connectionFail} alt="connection fail" />

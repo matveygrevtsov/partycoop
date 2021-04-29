@@ -4,16 +4,20 @@ import ImgLink from '../ImgLink/ImgLink'
 import Preloader from '../Preloader/Preloader'
 import ParticipantsList from '../ParticipantsList/ParticipantsList'
 import { fetchParty, fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
+import { Party, User } from '../../DataTypes'
 
-const PartyCard: React.FC<any> = ({ partyId, setConnection }) => {
-  const [party, setParty]: any = useState(null)
+const PartyCard: React.FC<{
+  partyId: string
+  setConnection: (connectionStatus: boolean) => void
+}> = (props) => {
+  const [party, setParty] = useState<Party | null>(null)
   const [pending, setPending] = useState(true)
-  const [participants, setParticipants]: any = useState([])
+  const [participants, setParticipants] = useState<User[]>([])
 
   useEffect(() => {
     setPending(true)
-    fetchParty(partyId)
-      .then((partyResponse: any) => {
+    fetchParty(props.partyId)
+      .then((partyResponse: Party) => {
         setParty(partyResponse)
         return Promise.all(
           [partyResponse.author, ...partyResponse.guests].map((id: string) =>
@@ -21,20 +25,24 @@ const PartyCard: React.FC<any> = ({ partyId, setConnection }) => {
           ),
         )
       })
-      .then((participantsResponse: any) => {
+      .then((participantsResponse: User[]) => {
         setParticipants(participantsResponse)
         setPending(false)
       })
-      .catch(() => setConnection(false))
-  }, [partyId, setConnection])
+      .catch(() => props.setConnection(false))
+  }, [props])
 
   if (pending) {
     return <Preloader />
   }
 
+  if (!party) {
+    return null
+  }
+
   return (
     <ImgLink
-      to={'/party/' + partyId}
+      to={'/party/' + props.partyId}
       imageName={party.imageName}
       className={styles.partyCard}
     >
@@ -49,4 +57,4 @@ const PartyCard: React.FC<any> = ({ partyId, setConnection }) => {
   )
 }
 
-export default PartyCard
+export default React.memo(PartyCard)

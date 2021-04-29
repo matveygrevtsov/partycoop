@@ -2,7 +2,7 @@ import React from 'react'
 import CenterLogo from '../../components/CenterLogo/CenterLogo'
 import styles from './PageNotFound.module.css'
 
-const PageNotFound: React.FC<any> = () => {
+const PageNotFound: React.FC = () => {
   return (
     <section className={styles.pageNotFound}>
       <CenterLogo />

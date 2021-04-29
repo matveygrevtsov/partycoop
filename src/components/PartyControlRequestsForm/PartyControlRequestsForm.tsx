@@ -2,10 +2,15 @@ import React, { useState } from 'react'
 import styles from './PartyControlRequestsForm.module.css'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
 import ImgLink from '../ImgLink/ImgLink'
+import { Party, UsersObject } from '../../DataTypes'
 
-// waitingRequests, rejectedRequests - это объекты, у которых ключи - айдишники
-
-const PartyControlRequestsForm: React.FC<any> = ({
+const PartyControlRequestsForm: React.FC<{
+  handleAction: (action: object) => void
+  party: Party
+  waitingRequests: UsersObject
+  rejectedRequests: UsersObject
+  setConnection: (connectionStatus: boolean) => void
+}> = ({
   handleAction,
   party,
   waitingRequests,
@@ -72,7 +77,7 @@ const PartyControlRequestsForm: React.FC<any> = ({
       <h2>Requests list</h2>
       <h3>Waiting ({Object.keys(waitingRequests).length})</h3>
       <ul className={styles.waitingRequestsList}>
-        {Object.keys(waitingRequests).map((id: any) => {
+        {Object.keys(waitingRequests).map((id: string) => {
           const user = waitingRequests[id]
           return (
             <li key={'AcceptOrReject' + id}>
@@ -127,4 +132,4 @@ const PartyControlRequestsForm: React.FC<any> = ({
   )
 }
 
-export default PartyControlRequestsForm
+export default React.memo(PartyControlRequestsForm)

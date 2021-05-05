@@ -4,7 +4,11 @@ import crownImageSRC from '../../images/crown.png'
 import ImgLink from '../ImgLink/ImgLink'
 import { User } from '../../DataTypes'
 
-const DetailedParticipantsList: React.FC<{ participants: User[] }> = (
+interface DetailedParticipantsListInterface {
+  participants: User[]
+}
+
+const DetailedParticipantsList: React.FC<DetailedParticipantsListInterface> = (
   props,
 ) => {
   return (

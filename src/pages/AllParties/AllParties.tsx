@@ -3,32 +3,25 @@ import styles from './AllParties.module.css'
 import PartiesList from '../../components/PartiesList/PartiesList'
 import { AuthContext } from '../../Auth'
 import { fetchAllPartiesIdsBesides } from '../../firebaseAPIhelpers/fetchFunctions'
-import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
-import { User } from '../../DataTypes'
 
 const AllParties: React.FC = () => {
   const [partiesIds, setPartiesIds] = useState<string[]>([])
   const [pending, setPending] = useState(true)
-  const { currentUser } = useContext(AuthContext)
-  const currentUserId = currentUser.uid
+  const { userData } = useContext(AuthContext)
   const [connection, setConnection] = useState(true)
 
   useEffect(() => {
-    setPending(true)
-    fetchUser(currentUserId)
-      .then((userResponse: User) => {
-        return fetchAllPartiesIdsBesides(userResponse.organizedParties)
-      })
-      .then((ids: string[]) => {
-        setPartiesIds(ids)
-      })
-      .catch(() => {
-        setConnection(false)
-      })
-      .finally(() => setPending(false))
-  }, [currentUserId])
+    if (userData.id) {
+      fetchAllPartiesIdsBesides(userData.organizedParties)
+        .then(
+          (ids: string[]) => setPartiesIds(ids),
+          () => setConnection(false),
+        )
+        .finally(() => setPending(false))
+    }
+  }, [userData])
 
   if (pending) {
     return <PagePreloader />

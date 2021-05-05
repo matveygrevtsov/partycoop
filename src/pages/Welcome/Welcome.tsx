@@ -1,9 +1,7 @@
 import React from 'react'
-
 import styles from './Welcome.module.css'
-
 import CenterLogo from '../../components/CenterLogo/CenterLogo'
-import Button from '../../components/Button/Button'
+import { Link } from 'react-router-dom'
 
 const Home: React.FC = () => {
   return (
@@ -11,8 +9,12 @@ const Home: React.FC = () => {
       <CenterLogo />
       <div>
         <h1>Welcome to Partycoop !</h1>
-        <Button to={'/signin'} text={'Sign In'} />
-        <Button to={'/signup'} text={'Sign Up'} />
+        <Link className={styles.signBtn} to={'/signin'}>
+          Sign In
+        </Link>
+        <Link className={styles.signBtn} to={'/signup'}>
+          Sign Up
+        </Link>
       </div>
     </section>
   )

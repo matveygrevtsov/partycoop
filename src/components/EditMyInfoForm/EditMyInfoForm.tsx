@@ -2,112 +2,76 @@ import React, { useContext, useEffect, useState } from 'react'
 import styles from './EditMyInfoForm.module.css'
 import { AuthContext } from '../../Auth'
 import UploadImgForm from '../UploadImgForm/UploadImgForm'
-import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import { updateData } from '../../firebaseAPIhelpers/updateDataFunctions'
-import Preloader from '../Preloader/Preloader'
 import InternetConnectionProblem from '../InternetConnectionProblem/InternetConnectionProblem'
-import { User } from '../../DataTypes'
-
-type InputUserData = {
-  fullName: string
-  age: number
-  aboutMe: string
-  imageName: string
-}
+import { correctEditMyInfoForm } from '../../InputDataValidators/InputDataValidators'
+import { EditMyInfoFormInterface } from '../../DataTypes'
+import PagePreloader from '../PagePreloader/PagePreloader'
 
 const EditMyInfoForm: React.FC = () => {
-  const { currentUser } = useContext(AuthContext)
-  const currentUserId = currentUser.uid
   const [pending, setPending] = useState(true)
+  const { userData, updateCurrentUserData } = useContext(AuthContext)
   const [submitPending, setSubmitPending] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
   const [submitMessage, setSubmitMessage] = useState('')
   const [connection, setConnection] = useState(true)
-  const [newUserData, setNewUserData] = useState<InputUserData | null>(null)
-
-  const inputDataWarning = (
-    userData: InputUserData,
-    currentUser: User,
-  ) => {
-    const trimInputFullName = userData.fullName.trim()
-    const trimInputAboutMe = userData.aboutMe.trim()
-
-    if (!trimInputFullName) {
-      return 'Empty Fullname'
-    }
-    if (/\d/g.test(trimInputFullName)) {
-      return 'Numbers are not allowed in the Fullname'
-    }
-    if (userData.age < 0) {
-      return 'Wrong age'
-    }
-    if (!trimInputAboutMe) {
-      return 'Empty about me info'
-    }
-    if (
-      currentUser.fullName === trimInputFullName &&
-      currentUser.age === userData.age &&
-      currentUser.aboutMe === trimInputAboutMe &&
-      currentUser.imageName === userData.imageName
-    ) {
-      return ' '
-    }
-
-    return ''
-  }
+  const [
+    newUserData,
+    setNewUserData,
+  ] = useState<EditMyInfoFormInterface | null>(null)
 
   const handleSubmit = () => {
-    if(!newUserData || !user) {
+    if (!newUserData) {
       return
     }
-    const warning: string = inputDataWarning(newUserData, user)
+    const warning: string = correctEditMyInfoForm(userData, newUserData)
     if (warning !== '') {
       setSubmitMessage(warning)
       return
     }
 
     setSubmitPending(true)
-    updateData('users', currentUserId, newUserData)
-      .then(() => setSubmitMessage('Successfully saved!'))
-      .catch(() => setConnection(false))
+    updateData('users', userData.id, newUserData)
+      .then(
+        () => {
+          updateCurrentUserData(newUserData)
+          setSubmitMessage('Successfully saved!')
+        },
+        () => setConnection(false),
+      )
       .finally(() => setSubmitPending(false))
   }
 
   useEffect(() => {
-    setPending(true)
-    fetchUser(currentUserId)
-      .then((user: User) => {
-        setUser(user)
-        setNewUserData({
-          fullName: user.fullName,
-          age: user.age,
-          aboutMe: user.aboutMe,
-          imageName: user.imageName,
-        })
-      })
-      .catch(() => setConnection(false))
-      .finally(() => setPending(false))
-  }, [currentUserId])
-
-  useEffect(() => {
-    if (user && newUserData) {
+    if (newUserData) {
       const timeOutId = setTimeout(
-        () => setSubmitMessage(inputDataWarning(newUserData, user)),
+        () => setSubmitMessage(correctEditMyInfoForm(userData, newUserData)),
         100,
       )
       return () => clearTimeout(timeOutId)
     }
-  }, [user, newUserData])
+  }, [userData, newUserData])
+
+  useEffect(() => {
+    if (userData.id) {
+      setNewUserData({
+        fullName: userData.fullName,
+        age: userData.age,
+        aboutMe: userData.aboutMe,
+        imageName: userData.imageName,
+      })
+      setPending(false)
+    }
+  }, [userData])
 
   if (pending) {
-    return <Preloader />
+    return <PagePreloader />
   }
 
   if (!connection) {
     return <InternetConnectionProblem />
   }
 
-  if (!newUserData || !user) {
+  if (!newUserData) {
     return null
   }
 
@@ -120,12 +84,10 @@ const EditMyInfoForm: React.FC = () => {
           </span>
           <input
             autoComplete="off"
-            onChange={(event) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setNewUserData({
-                fullName: event.target.value,
-                age: newUserData?.age,
-                aboutMe: newUserData?.aboutMe,
-                imageName: newUserData?.imageName,
+                ...newUserData,
+                fullName: event.target.value.trim(),
               })
             }
             value={newUserData.fullName}
@@ -142,12 +104,10 @@ const EditMyInfoForm: React.FC = () => {
           </span>
           <input
             autoComplete="off"
-            onChange={(event) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
               setNewUserData({
-                fullName: newUserData.fullName,
+                ...newUserData,
                 age: Number(event.target.value),
-                aboutMe: newUserData?.aboutMe,
-                imageName: newUserData?.imageName,
               })
             }
             value={String(newUserData.age)}
@@ -164,12 +124,10 @@ const EditMyInfoForm: React.FC = () => {
           </span>
           <textarea
             autoComplete="off"
-            onChange={(event) =>
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
               setNewUserData({
-                fullName: newUserData.fullName,
-                age: newUserData.age,
-                aboutMe: event.target.value,
-                imageName: newUserData?.imageName,
+                ...newUserData,
+                aboutMe: event.target.value.trim(),
               })
             }
             value={newUserData.aboutMe}
@@ -182,13 +140,11 @@ const EditMyInfoForm: React.FC = () => {
       <div className={styles.formCol}>
         <UploadImgForm
           folder="users"
-          id={currentUserId}
+          id={userData.id}
           startImageSrc={newUserData.imageName}
           setNewImage={(src: string) =>
             setNewUserData({
-              fullName: newUserData.fullName,
-              age: newUserData.age,
-              aboutMe: newUserData.aboutMe,
+              ...newUserData,
               imageName: src,
             })
           }
@@ -196,7 +152,7 @@ const EditMyInfoForm: React.FC = () => {
       </div>
       <div className={styles.formCol}>
         <button
-          disabled={submitMessage !== '' || submitPending}
+          disabled={pending || submitMessage !== '' || submitPending}
           className={styles.submitBtn}
           type="submit"
           onClick={handleSubmit}

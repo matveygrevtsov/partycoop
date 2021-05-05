@@ -17,7 +17,7 @@ export const rejectOnTimeout = async (
     }, ms)
   })
 
-export async function fetchParty(id: string): Promise<Party> {
+export const fetchParty = (id: string): Promise<Party> => {
   return rejectOnTimeout(
     firebaseApp
       .database()
@@ -44,7 +44,7 @@ export async function fetchParty(id: string): Promise<Party> {
   )
 }
 
-export async function fetchUser(id: string): Promise<User> {
+export const fetchUser = (id: string): Promise<User> => {
   return rejectOnTimeout(
     firebaseApp
       .database()
@@ -68,7 +68,7 @@ export async function fetchUser(id: string): Promise<User> {
   )
 }
 
-export async function fetchUsers(ids: string[]): Promise<UsersObject> {
+export const fetchUsers = async (ids: string[]): Promise<UsersObject> => {
   if (!ids) {
     return {}
   }
@@ -84,9 +84,9 @@ export async function fetchUsers(ids: string[]): Promise<UsersObject> {
   )
 }
 
-export async function fetchAllPartiesIdsBesides(
+export const fetchAllPartiesIdsBesides = async (
   unwantedIds: string[],
-): Promise<string[]> {
+): Promise<string[]> => {
   return rejectOnTimeout(
     firebaseApp
       .database()

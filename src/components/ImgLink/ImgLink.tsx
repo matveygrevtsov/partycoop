@@ -2,14 +2,14 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import noImageSelected from '../../images/noImageSelected.png'
 
-type Props = {
+interface ImgLinkInterface {
   to: string
   imageName: string
   doNotShowLink?: boolean
   className: string
 }
 
-const ImgLink: React.FC<Props> = ({
+const ImgLink: React.FC<ImgLinkInterface> = ({
   to,
   imageName,
   doNotShowLink,

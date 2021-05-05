@@ -7,12 +7,14 @@ import InternetConnectionProblem from '../InternetConnectionProblem/InternetConn
 
 const storage = firebaseApp.storage()
 
-const UploadImgForm: React.FC<{
+interface UploadImgFormInterface {
   setNewImage: (src: string) => void
   startImageSrc?: string
   folder: string
   id: string
-}> = (props) => {
+}
+
+const UploadImgForm: React.FC<UploadImgFormInterface> = (props) => {
   const [previewSrc, setPreviewSrc] = useState(props.startImageSrc || '')
   const [pending, setPending] = useState(false)
   const [errorText, setErrorText] = useState('')

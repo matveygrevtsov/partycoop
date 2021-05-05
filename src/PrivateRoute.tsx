@@ -8,11 +8,12 @@ const PrivateRoute: React.FC<any> = ({
   ...rest
 }) => {
   const { currentUser } = useContext(AuthContext)
+
   return (
     <Route
       {...rest}
       render={(routeProps) =>
-        !!currentUser ? (
+        currentUser ? (
           <>
             <NavBar />
             <RouteComponent {...routeProps} />

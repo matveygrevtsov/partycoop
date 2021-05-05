@@ -6,47 +6,54 @@ import ParticipantsList from '../ParticipantsList/ParticipantsList'
 import { fetchParty, fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import { Party, User } from '../../DataTypes'
 
-const PartyCard: React.FC<{
+interface PartyCardInterface {
   partyId: string
   setConnection: (connectionStatus: boolean) => void
-}> = (props) => {
+}
+
+const PartyCard: React.FC<PartyCardInterface> = (props) => {
   const [party, setParty] = useState<Party | null>(null)
   const [pending, setPending] = useState(true)
   const [participants, setParticipants] = useState<User[]>([])
 
   useEffect(() => {
     setPending(true)
+    let isMounted = true
     fetchParty(props.partyId)
       .then((partyResponse: Party) => {
-        setParty(partyResponse)
-        return Promise.all(
-          [partyResponse.author, ...partyResponse.guests].map((id: string) =>
-            fetchUser(id),
-          ),
-        )
+        if (isMounted) {
+          setParty(partyResponse)
+          return Promise.all(
+            [partyResponse.author, ...partyResponse.guests].map((id: string) =>
+              fetchUser(id),
+            ),
+          )
+        }
+        return null
       })
-      .then((participantsResponse: User[]) => {
-        setParticipants(participantsResponse)
-        setPending(false)
+      .then((participantsResponse: User[] | null) => {
+        if (isMounted && participantsResponse) {
+          setParticipants(participantsResponse)
+          setPending(false)
+        }
       })
       .catch(() => props.setConnection(false))
+    return () => {
+      isMounted = false
+    }
   }, [props])
 
   if (pending) {
     return <Preloader />
   }
 
-  if (!party) {
-    return null
-  }
-
   return (
     <ImgLink
       to={'/party/' + props.partyId}
-      imageName={party.imageName}
+      imageName={party!.imageName}
       className={styles.partyCard}
     >
-      <h2 className={styles.partyName}>{party.name}</h2>
+      <h2 className={styles.partyName}>{party!.name}</h2>
       <div className={styles.partyInfo}>
         <ParticipantsList
           doNotDisplayLinks={true}

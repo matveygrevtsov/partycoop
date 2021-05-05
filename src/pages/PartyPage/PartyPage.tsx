@@ -20,18 +20,14 @@ import InternetConnectionProblem from '../../components/InternetConnectionProble
 import { Party, User, UsersObject } from '../../DataTypes'
 
 const PartyPage: React.FC<any> = ({ match }) => {
-  const { currentUser } = useContext(AuthContext)
-  const currentUserId = currentUser.uid
+  const { userData } = useContext(AuthContext)
   const partyId = match.params.partyId
-  const [user, setUser] = useState<User | null>(null)
   const [party, setParty] = useState<Party | null>(null)
   const [guests, setGuests] = useState<UsersObject>({})
   const [waitingRequests, setWaitingRequests] = useState<UsersObject>({})
   const [rejectedRequests, setRejectedRequests] = useState<UsersObject>({})
   const [author, setAuthor] = useState<User | null>(null)
-
   const [pending, setPending] = useState(true)
-
   const [connection, setConnection] = useState(true)
 
   const requestsControlActionHandle = (action: any) => {
@@ -72,34 +68,30 @@ const PartyPage: React.FC<any> = ({ match }) => {
   }
 
   useEffect(() => {
-    setPending(true)
-    Promise.all([
-      fetchParty(partyId).then((partyResponse: Party) => {
-        setParty(partyResponse)
-        return partyResponse
-      }),
-      fetchUser(currentUserId).then((userResponse) => {
-        setUser(userResponse)
-        return userResponse
-      }),
-    ])
-      .then((responseArr) =>
-        Promise.all([
-          fetchUser(responseArr[0].author).then((responseAuthor) =>
-            setAuthor(responseAuthor),
-          ),
-          fetchUsers(responseArr[0].guests).then((users) => setGuests(users)),
-          fetchUsers(responseArr[0].waitingRequests).then((users) =>
-            setWaitingRequests(users),
-          ),
-          fetchUsers(responseArr[0].rejectedRequests).then((users) =>
-            setRejectedRequests(users),
-          ),
-        ]),
-      )
-      .catch(() => setConnection(false))
-      .finally(() => setPending(false))
-  }, [partyId, currentUserId])
+    if (userData.id) {
+      fetchParty(partyId)
+        .then((partyResponse: Party) => {
+          setParty(partyResponse)
+          return partyResponse
+        })
+        .then((partyResponse: Party) =>
+          Promise.all([
+            fetchUser(partyResponse.author).then((responseAuthor) =>
+              setAuthor(responseAuthor),
+            ),
+            fetchUsers(partyResponse.guests).then((users) => setGuests(users)),
+            fetchUsers(partyResponse.waitingRequests).then((users) =>
+              setWaitingRequests(users),
+            ),
+            fetchUsers(partyResponse.rejectedRequests).then((users) =>
+              setRejectedRequests(users),
+            ),
+          ]),
+        )
+        .catch(() => setConnection(false))
+        .finally(() => setPending(false))
+    }
+  }, [partyId, userData])
 
   if (pending) {
     return <PagePreloader />
@@ -113,7 +105,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
     return <InternetConnectionProblem />
   }
 
-  if (!author || !user) {
+  if (!author) {
     return null
   }
 
@@ -128,11 +120,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
       </ImgLink>
       <div className={styles.partyBody}>
         <div className={styles.partyActions}>
-          <ParticipateButton
-            party={party}
-            user={user}
-            setConnection={setConnection}
-          />
+          <ParticipateButton party={party} setConnection={setConnection} />
           <ParticipantsList participants={[author, ...Object.values(guests)]} />
         </div>
 
@@ -175,7 +163,7 @@ const PartyPage: React.FC<any> = ({ match }) => {
             </li>
           </ul>
         </div>
-        {party.author === currentUserId ? (
+        {party.author === userData.id ? (
           <PartyControlRequestsForm
             handleAction={requestsControlActionHandle}
             waitingRequests={waitingRequests}

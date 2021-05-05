@@ -1,4 +1,4 @@
-export type Party = {
+export interface Party {
   id: string
   ageInterval: [number, number]
   author: string
@@ -13,7 +13,7 @@ export type Party = {
   rejectedRequests: string[]
 }
 
-export type User = {
+export interface User {
   aboutMe: string
   age: number
   fullName: string
@@ -25,6 +25,37 @@ export type User = {
   participation: string[]
 }
 
-export type UsersObject = {
+export interface UsersObject {
   [key: string]: User
+}
+
+export interface SignUpInputInterface {
+  email: string
+  fullName: string
+  age: string
+  aboutMe: string
+  passwordLength: number
+}
+
+export interface CreatePartyFormInterface {
+  author: string
+  imageName: string
+  ageInterval: [string, string]
+  guestsNumberInterval: [string, string]
+  name: string
+  meetingPoint: string
+  description: string
+  meetingTime: string
+}
+
+export interface coloredText {
+  text: string
+  color: string
+}
+
+export interface EditMyInfoFormInterface {
+  fullName: string
+  age: number
+  aboutMe: string
+  imageName: string
 }

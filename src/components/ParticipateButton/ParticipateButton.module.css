@@ -1,9 +1,12 @@
-.redText {
-  color: #dc3545;
+.textWarning {
   line-height: 50px;
 }
 
-.greenText {
-  color: #198754;
-  line-height: 50px;
+.participateBtn {
+  display: inline-block;
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
 }

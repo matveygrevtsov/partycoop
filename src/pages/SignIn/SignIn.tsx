@@ -5,6 +5,7 @@ import { AuthContext } from '../../Auth'
 import CenterLogo from '../../components/CenterLogo/CenterLogo'
 import styles from './SignIn.module.css'
 import { Link } from 'react-router-dom'
+import { signInFormValidator } from '../../InputDataValidators/SignInFormValidator'
 
 const SignIn: React.FC<any> = ({ history }) => {
   const { currentUser } = useContext(AuthContext)
@@ -12,28 +13,11 @@ const SignIn: React.FC<any> = ({ history }) => {
   const [passwordLength, setPasswordLength]: any = useState(0)
   const [errorText, setErrorText] = useState('')
 
-  const inputDataWarning = (email: string, passwordLength: number) => {
-    if (!email && passwordLength < 1) {
-      return ' '
-    }
-    if (!email) {
-      return 'Empty email'
-    }
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    if (!re.test(email.toLowerCase())) {
-      return 'Please enter a valid email'
-    }
-    if (passwordLength < 6) {
-      return 'Your password must contain at least 6 characters'
-    }
-    return ''
-  }
-
   const handleSignIn = useCallback(
     async (event) => {
       event.preventDefault()
       const { email, password } = event.target.elements
-      const warning = inputDataWarning(email.value, password.value.length)
+      const warning = signInFormValidator(email.value, password.value.length)
       if (warning !== '') {
         setErrorText(warning)
         return
@@ -52,7 +36,7 @@ const SignIn: React.FC<any> = ({ history }) => {
 
   useEffect(() => {
     const timeOutId = setTimeout(
-      () => setErrorText(inputDataWarning(email, passwordLength)),
+      () => setErrorText(signInFormValidator(email, passwordLength)),
       100,
     )
     return () => clearTimeout(timeOutId)
@@ -72,7 +56,9 @@ const SignIn: React.FC<any> = ({ history }) => {
           name="email"
           type="email"
           placeholder="Email"
-          onChange={(event) => setEmail(event.target.value)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setEmail(event.target.value)
+          }
         />
         <input
           autoComplete="off"
@@ -80,7 +66,9 @@ const SignIn: React.FC<any> = ({ history }) => {
           name="password"
           type="password"
           placeholder="Password"
-          onChange={(event) => setPasswordLength(event.target.value.length)}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            setPasswordLength(event.target.value.length)
+          }
         />
         <br />
 

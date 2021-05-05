@@ -5,31 +5,35 @@ import DetailedParticipantsList from '../DetailedParticipantsList/DetailedPartic
 import ImgLink from '../ImgLink/ImgLink'
 import { User } from '../../DataTypes'
 
-const ParticipantsList: React.FC<{
+interface ParticipantsListInterface {
   participants: User[]
   doNotDisplayLinks?: boolean
-}> = (props) => {
+}
+
+const ParticipantsList: React.FC<ParticipantsListInterface> = (props) => {
   const [showDetailedList, setShowDetailedList] = useState(false)
   return (
     <>
       <ul className={styles.partyParticipants}>
-        {props.participants.slice(0, 4).map((participant: User, index: number) => (
-          <li key={'ParticipantsList' + participant.id}>
-            {index === 0 ? (
-              <img
-                className={styles.crown}
-                src={crownImageSRC}
-                alt={'partyAuthor'}
+        {props.participants
+          .slice(0, 4)
+          .map((participant: User, index: number) => (
+            <li key={'ParticipantsList' + participant.id}>
+              {index === 0 ? (
+                <img
+                  className={styles.crown}
+                  src={crownImageSRC}
+                  alt={'partyAuthor'}
+                />
+              ) : null}
+              <ImgLink
+                doNotShowLink={props.doNotDisplayLinks}
+                to={'/user/' + participant.id}
+                imageName={participant.imageName}
+                className={styles.partyParticipant}
               />
-            ) : null}
-            <ImgLink
-              doNotShowLink={props.doNotDisplayLinks}
-              to={'/user/' + participant.id}
-              imageName={participant.imageName}
-              className={styles.partyParticipant}
-            />
-          </li>
-        ))}
+            </li>
+          ))}
 
         {!props.doNotDisplayLinks ? (
           <li>

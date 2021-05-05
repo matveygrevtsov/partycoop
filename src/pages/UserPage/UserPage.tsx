@@ -4,24 +4,26 @@ import PageNotFound from '../PageNotFound/PageNotFound'
 import { fetchUser } from '../../firebaseAPIhelpers/fetchFunctions'
 import ImgLink from '../../components/ImgLink/ImgLink'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
-import { Link } from 'react-router-dom'
+import { Link, RouteComponentProps } from 'react-router-dom'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 import { User } from '../../DataTypes'
 
-const UserPage: React.FC<any> = ({ match }) => {
+interface MatchParams {
+  userId: string
+}
+
+interface Props extends RouteComponentProps<MatchParams> {}
+
+const UserPage: React.FC<Props> = ({ match }) => {
   const userId = match.params.userId
   const [pending, setPending] = useState(true)
   const [user, setUser] = useState<User | null>(null)
   const [connection, setConnection] = useState(true)
 
   useEffect(() => {
-    setConnection(true)
-    setPending(true)
     fetchUser(userId)
       .then(
-        (user: User) => {
-          setUser(user)
-        },
+        (user: User) => setUser(user),
         () => setConnection(false),
       )
       .finally(() => setPending(false))

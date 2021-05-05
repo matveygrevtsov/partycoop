@@ -1,0 +1,10 @@
+.createParty {
+  position: relative;
+  max-width: 900px;
+  width: 100%;
+  padding: 15px;
+  box-sizing: border-box;
+  margin: auto;
+  background-color: white;
+  margin-top: 15px;
+}

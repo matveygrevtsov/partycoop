@@ -11,7 +11,7 @@ import PagePreloader from '../PagePreloader/PagePreloader'
 const EditMyInfoForm: React.FC = () => {
   const [pending, setPending] = useState(true)
   const { userData, updateCurrentUserData } = useContext(AuthContext)
-  const [submitPending, setSubmitPending] = useState(false)
+  const [submitPending, setSubmitPending] = useState(true)
   const [submitMessage, setSubmitMessage] = useState('')
   const [connection, setConnection] = useState(true)
   const [
@@ -30,26 +30,24 @@ const EditMyInfoForm: React.FC = () => {
     }
 
     setSubmitPending(true)
-    updateData('users', userData.id, newUserData)
-      .then(
-        () => {
-          updateCurrentUserData(newUserData)
-          setSubmitMessage('Successfully saved!')
-        },
-        () => setConnection(false),
-      )
-      .finally(() => setSubmitPending(false))
+    updateData('users', userData.id, newUserData).then(
+      () => {
+        updateCurrentUserData(newUserData)
+        setSubmitMessage('Successfully saved!')
+      },
+      () => setConnection(false),
+    )
   }
 
   useEffect(() => {
-    if (newUserData) {
+    if (newUserData && !submitPending) {
       const timeOutId = setTimeout(
         () => setSubmitMessage(correctEditMyInfoForm(userData, newUserData)),
         100,
       )
       return () => clearTimeout(timeOutId)
     }
-  }, [userData, newUserData])
+  }, [userData, newUserData, submitPending])
 
   useEffect(() => {
     if (userData.id) {
@@ -84,12 +82,13 @@ const EditMyInfoForm: React.FC = () => {
           </span>
           <input
             autoComplete="off"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNewUserData({
                 ...newUserData,
                 fullName: event.target.value.trim(),
               })
-            }
+              setSubmitPending(false)
+            }}
             value={newUserData.fullName}
             required
             className={styles.inputText}
@@ -104,12 +103,13 @@ const EditMyInfoForm: React.FC = () => {
           </span>
           <input
             autoComplete="off"
-            onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setNewUserData({
                 ...newUserData,
                 age: Number(event.target.value),
               })
-            }
+              setSubmitPending(false)
+            }}
             value={String(newUserData.age)}
             type="number"
             required
@@ -124,12 +124,13 @@ const EditMyInfoForm: React.FC = () => {
           </span>
           <textarea
             autoComplete="off"
-            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+            onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => {
               setNewUserData({
                 ...newUserData,
                 aboutMe: event.target.value.trim(),
               })
-            }
+              setSubmitPending(false)
+            }}
             value={newUserData.aboutMe}
             required
             className={styles.aboutMeArea}
@@ -142,12 +143,13 @@ const EditMyInfoForm: React.FC = () => {
           folder="users"
           id={userData.id}
           startImageSrc={newUserData.imageName}
-          setNewImage={(src: string) =>
+          setNewImage={(src: string) => {
             setNewUserData({
               ...newUserData,
               imageName: src,
             })
-          }
+            setSubmitPending(false)
+          }}
         />
       </div>
       <div className={styles.formCol}>
@@ -157,7 +159,7 @@ const EditMyInfoForm: React.FC = () => {
           type="submit"
           onClick={handleSubmit}
         >
-          {submitPending ? 'Loading ...' : 'Save changes'}
+          Save changes
         </button>
         <p
           className={

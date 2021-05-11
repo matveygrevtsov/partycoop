@@ -8,6 +8,7 @@ import { AuthContext } from '../../Auth'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 import { User } from '../../DataTypes'
 import { Link, RouteComponentProps } from 'react-router-dom'
+import RefreshButton from '../../components/RefreshButton/RefreshButton'
 
 interface MatchParams {
   userId: string
@@ -53,6 +54,7 @@ const OrganizedAndParticipationPartiesPage: React.FC<Props> = ({ match }) => {
 
   return (
     <section className={styles.organizedAndParticipationPartiesSection}>
+      {userData.id === userId ? <RefreshButton /> : null}
       <h2 className={styles.counterHeading}>
         {userData.id === userId
           ? 'Organized parties '

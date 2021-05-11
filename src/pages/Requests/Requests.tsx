@@ -4,6 +4,7 @@ import { AuthContext } from '../../Auth'
 import PartiesList from '../../components/PartiesList/PartiesList'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
+import RefreshButton from '../../components/RefreshButton/RefreshButton'
 
 const Requests: React.FC = () => {
   const { userData } = useContext(AuthContext)
@@ -26,6 +27,7 @@ const Requests: React.FC = () => {
 
   return (
     <section className={styles.myRequests}>
+      <RefreshButton />
       <h2>Waiting requests ({userData.waitingRequests.length})</h2>
       <PartiesList
         setConnection={setConnection}

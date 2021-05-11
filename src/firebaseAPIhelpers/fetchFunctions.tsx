@@ -85,7 +85,7 @@ export const fetchUsers = async (ids: string[]): Promise<UsersObject> => {
 }
 
 export const fetchAllPartiesIdsBesides = async (
-  unwantedIds: string[],
+  unwantedIds: string[] | null,
 ): Promise<string[]> => {
   return rejectOnTimeout(
     firebaseApp

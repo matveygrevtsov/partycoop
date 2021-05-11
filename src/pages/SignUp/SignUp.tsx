@@ -63,8 +63,15 @@ const SignUp: React.FC<any> = ({ history }) => {
           }),
         )
         .then(
-          () => history.push('/settings'),
-          () => setConnection(false),
+          () => history.push('/allparties'),
+          (err) => {
+            if (err.message === 'timeout_error') {
+              setConnection(false)
+            } else {
+              setErrorText(err.message)
+              setPending(false)
+            }
+          },
         )
     },
     [history],
@@ -120,6 +127,8 @@ const SignUp: React.FC<any> = ({ history }) => {
         <input
           autoComplete="off"
           type="number"
+          min="0"
+          max="100"
           className={styles.inputText}
           name="age"
           placeholder="Age"

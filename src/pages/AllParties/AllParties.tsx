@@ -5,6 +5,7 @@ import { AuthContext } from '../../Auth'
 import { fetchAllPartiesIdsBesides } from '../../firebaseAPIhelpers/fetchFunctions'
 import PagePreloader from '../../components/PagePreloader/PagePreloader'
 import InternetConnectionProblem from '../../components/InternetConnectionProblem/InternetConnectionProblem'
+import RefreshButton from '../../components/RefreshButton/RefreshButton'
 
 const AllParties: React.FC = () => {
   const [partiesIds, setPartiesIds] = useState<string[]>([])
@@ -34,6 +35,7 @@ const AllParties: React.FC = () => {
   return (
     <section className={styles.allParties}>
       <h2>All parties ({partiesIds.length})</h2>
+      <RefreshButton />
       <PartiesList setConnection={setConnection} partiesIDs={partiesIds} />
     </section>
   )
